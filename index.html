@@ -1,769 +1,677 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farol — a internet do Gov.br, explicada passo a passo</title>
-<meta name="description" content="Farol é o assistente de navegação digital do IAssistente Intergeracional: tutoria reversa com IA para idosos, PcD e pessoas neurodivergentes em fluxos do Gov.br. Projeto de código aberto — SBGAMES 2026, IFPA Bragança.">
+<title>Farol — a internet do Gov.br, explicada como se fosse a primeira vez</title>
+<meta name="description" content="Farol é o assistente de navegação digital do IAssistente Intergeracional: tutoria reversa com IA para idosos, PcD e pessoas neurodivergentes nos fluxos do Gov.br. O feixe aponta o campo, a voz explica o passo — e quem executa é você. Projeto de código aberto — SBGAMES 2026, IFPA Bragança.">
 <meta name="theme-color" content="#04183F">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M25.4 20.8 8 16v10z' fill='%23FFCD07'/%3E%3Cpath d='M38.6 20.8 56 16v10z' fill='%23FFCD07'/%3E%3Crect x='20.5' y='48' width='23' height='5' rx='2.5' fill='%2304183F'/%3E%3Crect x='25' y='26.5' width='14' height='3.4' rx='1.7' fill='%2304183F'/%3E%3Crect x='23.5' y='26.3' width='17' height='3.2' rx='1.6' fill='%2304183F'/%3E%3Cpath d='M25 48 27.5 29.5h9L39 48z' fill='%2304183F'/%3E%3Ccircle cx='32' cy='20' r='7' fill='%23FFCD07'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Farol — a internet do Gov.br, explicada como se fosse a primeira vez">
+<meta property="og:description" content="O feixe aponta o campo. A voz explica o passo. Quem executa é você. Conheça o Farol, o assistente de navegação digital do IAssistente Intergeracional.">
+<meta property="og:url" content="https://asafetork.github.io/farol/">
+<meta property="og:image" content="https://asafetork.github.io/farol/assets/og-farol.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230C326F'/%3E%3Cpath d='M25.4 20.8 8 16v10z' fill='%23FFCD07'/%3E%3Cpath d='M38.6 20.8 56 16v10z' fill='%23FFCD07'/%3E%3Crect x='20.5' y='48' width='23' height='5' rx='2.5' fill='%23fff'/%3E%3Crect x='23.5' y='26.3' width='17' height='3.2' rx='1.6' fill='%23fff'/%3E%3Cpath d='M25 48 27.5 29.5h9L39 48z' fill='%23fff'/%3E%3Ccircle cx='32' cy='20' r='7' fill='%23FFCD07'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<style>
-  :root{
-    /* paleta Farol (identidade) — reverse-engineered gov.br DS v3.7.0 */
-    --noite:#04183F; --noite-2:#0C326F; --azul:#1351B4; --azul-claro:#155BCB;
-    --amarelo:#FFCD07; --amarelo-suave:#FFF5C2;
-    --texto:#333333; --cinza:#555555; --fundo:#F0F3F7; --linha:#DBE2ED;
-    --branco:#FFFFFF; --verde:#168821; --erro:#E52207;
-    --borda:#5E779F; --azul-suave:#E0EDFF; --creme:#FFFBF0;
-    --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:48px; --s6:64px; --s7:80px;
-    --medida:68ch; --conteudo:1080px; --raio:8px;
-    --display:"Archivo","Segoe UI",system-ui,sans-serif;
-    --corpo:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
-    --dado:ui-monospace,"DejaVu Sans Mono",monospace;
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.remove('no-js');
+  root.classList.add('js');
+  try{
+    var pref = localStorage.getItem('farol-motion');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var off = pref === 'off' || (reduce && pref !== 'on');
+    root.classList.add(off ? 'motion-off' : 'motion-on');
+  }catch(e){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) root.classList.add('motion-off');
   }
-  *{box-sizing:border-box; margin:0}
-  html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
-  body{
-    font-family:var(--corpo); font-size:18px; line-height:1.6;
-    color:var(--texto); background:var(--branco);
-  }
-  :focus-visible{outline:3px solid var(--azul); outline-offset:2px; border-radius:2px}
-  .hero :focus-visible, .final :focus-visible, footer :focus-visible, .barra :focus-visible{outline-color:var(--amarelo)}
-  a{color:var(--azul); text-underline-offset:3px}
-  img,svg{display:block}
-  .conteudo{max-width:var(--conteudo); margin-inline:auto; padding-inline:var(--s3)}
-  section[id]{scroll-margin-top:76px}
-  .pular{position:absolute; left:-9999px; top:0; background:var(--noite); color:#fff;
-         padding:var(--s1) var(--s2); z-index:20; font-weight:700; text-decoration:none}
-  .pular:focus{left:0}
-
-  /* ── barra superior ───────────────────── */
-  header.barra{position:sticky; top:0; background:rgba(4,24,63,.97); z-index:10;
-               border-bottom:1px solid #1B3466; backdrop-filter:saturate(140%)}
-  .barra .conteudo{display:flex; align-items:center; gap:var(--s2); min-height:68px}
-  .marca{display:flex; align-items:center; gap:var(--s1); text-decoration:none; color:#fff}
-  .marca .nome{font-family:var(--display); font-weight:700; font-size:24px; letter-spacing:-.4px; line-height:1}
-  .marca .sub{display:block; font-family:var(--corpo); font-weight:400; font-size:12px;
-              letter-spacing:.01em; color:#AFC3E4; margin-top:4px}
-  nav.topo{display:flex; gap:var(--s3); margin-left:auto}
-  nav.topo a{color:#DCE6F7; text-decoration:none; font-size:16px; font-weight:700;
-             padding:4px; border-bottom:2px solid transparent}
-  nav.topo a:hover{color:#fff; border-bottom-color:var(--amarelo)}
-  .barra .cta-mini{margin-left:var(--s2); background:var(--amarelo); color:var(--noite);
-                   font-family:var(--display); font-weight:700; font-size:15px; text-decoration:none;
-                   padding:8px 16px; border-radius:999px; white-space:nowrap}
-  .barra .cta-mini:hover{background:#FFD633}
-  @media (max-width:1160px){ nav.topo{display:none} .marca .sub{display:none} }
-  @media (max-width:520px){ .barra .cta-mini{display:none} }
-
-  /* ── etiqueta / títulos ───────────────── */
-  .etiqueta{font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:.08em;
-            text-transform:uppercase; color:var(--azul)}
-  .hero .etiqueta{color:#8FA9D6}
-  h2.titulo{font-family:var(--display); font-weight:700; font-size:clamp(30px,3.6vw,43px);
-            line-height:1.15; letter-spacing:-.5px; margin-top:var(--s1); max-width:24ch; color:var(--noite)}
-  p.medida{max-width:var(--medida); margin-top:var(--s3); color:var(--cinza)}
-  .fonte{font-size:14px; color:var(--cinza); margin-top:var(--s3); max-width:var(--medida)}
-  .fonte b{color:var(--noite)}
-
-  /* ── HERO ─────────────────────────────── */
-  section.hero{background:var(--noite); color:#fff; padding-block:var(--s6); position:relative; overflow:hidden}
-  section.hero::before{content:""; position:absolute; inset:0;
-    background:radial-gradient(120% 90% at 82% 18%, rgba(255,205,7,.10), transparent 55%);
-    pointer-events:none}
-  .hero .conteudo{display:grid; grid-template-columns:1.05fr .95fr; gap:var(--s5); align-items:center; position:relative}
-  .hero h1{font-family:var(--display); font-weight:700; font-size:clamp(38px,5.4vw,60px);
-           line-height:1.05; letter-spacing:-1.2px; margin-top:var(--s2)}
-  .hero h1 em{font-style:normal; color:var(--amarelo)}
-  .hero .chamada{margin-top:var(--s3); font-size:23px; line-height:1.4; color:#DCE6F7; max-width:30ch; font-weight:700}
-  .hero p.sub{margin-top:var(--s3); color:#AFC3E4; max-width:52ch}
-  .hero .confianca{margin-top:var(--s3); display:flex; gap:var(--s2); flex-wrap:wrap; font-size:14px; color:#AFC3E4}
-  .hero .confianca span{display:inline-flex; align-items:center; gap:6px}
-  .hero .confianca b{color:#DCE6F7}
-  .ctas{display:flex; gap:var(--s2); margin-top:var(--s4); flex-wrap:wrap}
-  .botao{display:inline-flex; align-items:center; min-height:52px; text-decoration:none;
-         font-family:var(--display); font-weight:700; font-size:18px; padding:12px var(--s4);
-         border-radius:var(--raio); border:0; cursor:pointer; transition:transform .15s ease-out, background .15s ease-out}
-  .botao:hover{transform:translateY(-2px)}
-  .botao.primario{background:var(--amarelo); color:var(--noite)}
-  .botao.primario:hover{background:#FFD633}
-  .botao.fantasma{background:transparent; color:#fff; border:2px solid #6E8FC7}
-  .botao.fantasma:hover{border-color:var(--amarelo)}
-  @media (max-width:940px){
-    .hero .conteudo{grid-template-columns:1fr; gap:var(--s5)}
-    .hero .aparelho-wrap{order:-1}
-  }
-
-  /* ── aparelho (mockup completo, nada faltando) ── */
-  .aparelho-wrap{display:flex; flex-direction:column; align-items:center; gap:var(--s2)}
-  .aparelho{position:relative; width:300px; padding:6px; background:#16181D; border-radius:40px;
-            box-shadow:0 24px 64px rgba(0,0,0,.5), inset 0 0 0 2px #2A2D34}
-  .btn-fisico{position:absolute; width:3px; background:#2A2D34; border-radius:2px}
-  .btn-fisico.vol-up{left:-3px; top:132px; height:32px}
-  .btn-fisico.vol-dn{left:-3px; top:170px; height:32px}
-  .btn-fisico.power{right:-3px; top:150px; height:52px}
-  .alto-falante{position:absolute; right:-3px; top:222px; width:3px; height:44px; background:#2A2D34; border-radius:2px}
-  .tela{position:relative; width:288px; height:620px; border-radius:32px; overflow:hidden;
-        background:var(--branco); display:flex; flex-direction:column}
-  .camera{position:absolute; top:7px; left:50%; transform:translateX(-50%); width:9px; height:9px;
-          border-radius:50%; background:#0A0B0E; z-index:9; box-shadow:inset 0 0 0 1.5px #23262D}
-
-  .statusbar{flex:none; height:26px; display:flex; align-items:center; justify-content:space-between;
-             padding:0 14px; font-family:var(--display); font-weight:600; font-size:11px; color:#262627;
-             font-variant-numeric:tabular-nums}
-  .statusbar .esq{display:flex; align-items:center; gap:6px}
-  .statusbar .dir{display:flex; align-items:center; gap:4px}
-
-  .appbar{flex:none; height:46px; display:flex; align-items:center; gap:12px; padding:0 14px;
-          border-bottom:1px solid #E5E5E5}
-  .gov-logo{font-family:var(--display); font-weight:700; font-size:18px; color:var(--azul); letter-spacing:-.3px}
-  .gov-logo i{font-style:normal; color:var(--noite-2)}
-  .pill-atalhos{display:flex; align-items:center; gap:6px; margin-left:auto; border:1px solid var(--azul);
-                border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700; color:var(--azul)}
-  .pill-entrar{display:flex; align-items:center; gap:5px; background:var(--azul); border-radius:999px;
-               padding:3px 10px; font-size:11px; font-weight:700; color:#fff}
-
-  .tela-conteudo{flex:1; padding:18px 14px; display:flex; flex-direction:column; gap:16px; overflow:hidden}
-  .titulo-login{font-family:var(--display); font-size:19px; font-weight:700; color:var(--noite-2); text-align:center; line-height:1.2}
-  .sub-login{font-size:12px; color:var(--cinza); text-align:center; margin-top:-10px; line-height:1.4}
-  .campo-wrap{position:relative}
-  .rotulo-campo{display:block; font-size:12px; font-weight:700; color:var(--texto); margin-bottom:6px}
-  .input-cpf{width:100%; height:40px; border:1px solid #888; border-radius:4px; padding:0 16px;
-             font-family:Arial,Helvetica,sans-serif; font-size:13px; color:#000; background:#fff;
-             display:flex; align-items:center}
-  .input-cpf .placeholder{color:#767676}
-  .input-cpf .caret{width:1px; height:16px; background:#000; margin-left:3px}
-  /* MOMENTO-ASSINATURA: anel amarelo guiando o campo (extraído do paper M1) */
-  .anel-guia{position:absolute; left:-3px; right:-3px; top:22px; height:46px; border:3px solid var(--amarelo);
-             border-radius:10px; pointer-events:none; animation:pulso 2s ease-in-out infinite;
-             box-shadow:0 0 0 4px rgba(255,205,7,.14)}
-  @keyframes pulso{0%,100%{opacity:1} 50%{opacity:.35}}
-  .btn-continuar{width:100%; height:40px; background:var(--azul); border-radius:20px; border:0;
-                 font-family:Arial,Helvetica,sans-serif; font-size:13px; font-weight:700; color:#fff}
-  .selo-serpro{display:flex; justify-content:center; gap:10px; align-items:center; margin-top:8px}
-  .selo-serpro span{font-size:9px; color:#767676; border:1px solid #E5E5E5; border-radius:4px; padding:3px 6px}
-
-  .camada{position:absolute; left:12px; right:12px; bottom:30px; z-index:8; display:flex; flex-direction:column; gap:6px}
-  .balao{background:var(--noite); color:#fff; border-radius:14px; padding:12px; display:flex; gap:10px;
-         box-shadow:0 8px 24px rgba(4,24,63,.4)}
-  .farol-bolinha{flex:none; width:26px; height:26px; border-radius:50%; background:var(--noite);
-                 border:2px solid var(--amarelo); display:grid; place-items:center}
-  .balao p{font-size:12px; line-height:1.45}
-  .balao p b{color:var(--amarelo)}
-  .chips{display:flex; gap:6px; padding-left:12px; flex-wrap:wrap}
-  .chips span{background:var(--noite); border:1px solid #2A4680; color:#DCE6F7; border-radius:999px; padding:3px 10px; font-size:9.5px; font-weight:700}
-  .passo{display:flex; align-items:center; justify-content:center; gap:6px;
-         font-family:var(--display); font-weight:600; font-size:10px; letter-spacing:.08em; color:var(--cinza)}
-  .passo i{width:6px; height:6px; border-radius:50%; background:#C9D4EA}
-  .passo i.on{background:var(--azul)}
-  .navbar{flex:none; height:18px; display:grid; place-items:center; background:#fff}
-  .navbar .pilha{width:84px; height:4px; border-radius:2px; background:#262627}
-
-  /* pílula de narração — fogo sob vidro fosco (mesma receita da Figura 3 do paper) */
-  .pilha-narracao{position:relative; height:36px; width:fit-content; margin:0 auto}
-  .pilha-narracao .aura{position:absolute; inset:-8px; border-radius:999px;
-    background:
-      radial-gradient(46% 62% at 22% 78%, rgba(255,138,22,.5), rgba(255,138,22,0) 62%),
-      radial-gradient(40% 54% at 86% 30%, rgba(255,205,7,.36), rgba(255,205,7,0) 60%),
-      radial-gradient(72% 92% at 55% 50%, rgba(255,180,60,.16), rgba(255,180,60,0) 70%);
-    filter:blur(14px)}
-  .pilha-narracao .vidro{position:absolute; inset:0; border-radius:999px;
-    background:linear-gradient(180deg, rgba(255,252,246,.55), rgba(255,240,214,.38));
-    box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9), 0 3px 14px rgba(4,24,63,.24)}
-  .pilha-narracao .brasa{position:absolute; inset:0; border-radius:999px;
-    background:
-      radial-gradient(52% 82% at 16% 78%, rgba(255,122,16,.55), rgba(255,122,16,0) 55%),
-      radial-gradient(46% 70% at 90% 24%, rgba(255,205,7,.4), rgba(255,205,7,0) 58%);
-    filter:blur(6px)}
-  .pilha-narracao .linha{position:relative; z-index:2; height:100%; display:flex; align-items:center;
-                         gap:8px; padding:0 12px}
-  .pilha-narracao .linha b{font-family:var(--display); font-weight:700; font-size:12.5px;
-                           color:var(--noite-2); white-space:nowrap}
-  .legenda-aparelho{font-size:14px; color:#AFC3E4; text-align:center; max-width:34ch; line-height:1.5}
-  .legenda-aparelho b{color:#DCE6F7}
-
-  /* ── seções claras ────────────────────── */
-  section.bloco{padding-block:var(--s6)}
-  section.bloco.zebra{background:var(--fundo)}
-
-  /* problema: 3 linhas numeradas (sem cards idênticos) */
-  .lista-problema{margin-top:var(--s4); display:grid; gap:0; max-width:var(--medida)}
-  .linha-problema{display:grid; grid-template-columns:56px 1fr; gap:var(--s2); align-items:baseline;
-                  padding:var(--s3) 0; border-top:2px solid var(--linha)}
-  .linha-problema .num{font-family:var(--display); font-size:32px; font-weight:700; color:var(--azul);
-                       font-variant-numeric:tabular-nums; line-height:1}
-  .linha-problema strong{display:block; font-size:20px; color:var(--noite); font-family:var(--display); font-weight:600}
-  .linha-problema span{color:var(--cinza); display:block; margin-top:4px}
-
-  /* tutoria reversa */
-  .definicao{margin-top:var(--s4); padding-left:var(--s3); border-left:6px solid var(--amarelo); max-width:var(--medida)}
-  .definicao p + p{margin-top:var(--s2)}
-  .definicao strong{color:var(--noite-2)}
-
-  /* ── as três telas ────────────────────── */
-  .telas{margin-top:var(--s5); display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s3)}
-  @media (max-width:900px){ .telas{grid-template-columns:1fr; max-width:360px; margin-inline:auto} }
-  .telas figure{margin:0}
-  .t-telefone{width:100%; height:560px; background:var(--branco); border:2px solid var(--linha);
-              border-radius:24px; overflow:hidden; box-shadow:0 8px 24px rgba(12,50,111,.14)}
-  .t-screen{height:100%; display:flex; flex-direction:column; padding:var(--s2)}
-  .t-gov{height:42px; flex:none; background:var(--azul); border-radius:10px; display:flex;
-         align-items:center; padding:0 14px; gap:8px}
-  .t-gov .ponto{width:12px; height:12px; border-radius:50%; background:var(--amarelo); flex:none}
-  .t-gov b{color:#fff; font-family:var(--display); font-size:17px}
-  .t-gov .pill{margin-left:auto; background:var(--amarelo); color:var(--noite); font-family:var(--display);
-               font-size:12px; font-weight:700; border-radius:999px; padding:3px 8px}
-  .t-tela{font-family:var(--display); font-size:20px; font-weight:700; color:var(--noite-2); margin-top:12px; line-height:1.2}
-  .t-helper{font-size:15px; color:var(--cinza); margin-top:4px}
-  .t-campo{flex:none; height:46px; border:1px solid #888; border-radius:4px; display:flex;
-           align-items:center; padding:0 16px; font-family:Arial,sans-serif; font-size:15px; color:var(--cinza);
-           margin-top:12px; position:relative}
-  .t-campo .anel{position:absolute; inset:-6px; border:3px solid var(--amarelo); border-radius:10px}
-  .t-dica{font-size:14px; font-weight:700; color:var(--azul); margin-top:10px; text-align:center}
-  .t-btn{flex:none; height:42px; margin-top:12px; background:var(--azul); border-radius:21px;
-         display:flex; align-items:center; justify-content:center; font-family:Arial,sans-serif;
-         font-size:15px; font-weight:700; color:#fff}
-  .t-proximo{flex:none; margin-top:10px; border:1px dashed #C5D2E8; border-radius:var(--raio);
-             padding:8px 14px; font-size:13px; color:var(--cinza); text-align:center}
-  .t-fala{flex:none; margin-top:12px; background:var(--noite); border-radius:12px; padding:10px 14px;
-          display:flex; gap:10px; align-items:flex-start}
-  .t-fala p{font-size:14px; line-height:1.4; color:#fff}
-  .t-fala p b{color:var(--amarelo)}
-  .t-acoes{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
-  .t-acoes span{border:1px solid var(--borda); border-radius:999px; padding:3px 12px;
-                font-size:12px; font-weight:700; color:var(--azul-escuro,var(--noite-2))}
-  .t-passo{flex:none; margin-top:auto; display:flex; align-items:center; justify-content:center;
-           gap:8px; font-family:var(--display); font-size:13px; font-weight:600; color:var(--cinza); letter-spacing:.08em}
-  .t-passo i{width:7px; height:7px; border-radius:50%; background:#C9D4EA}
-  .t-passo i.on{background:var(--azul)}
-  .t-erro{margin-top:10px; border:2px solid #C21B31; background:#FFEFF3; border-radius:6px;
-          padding:8px 12px; font-family:var(--dado); font-size:12px; font-weight:700; color:#C21B31; word-break:break-all}
-  .t-ia{flex:none; margin-top:10px; border-left:5px solid var(--amarelo); background:var(--creme);
-        border-radius:var(--raio); padding:14px}
-  .t-ia .cab{display:flex; gap:8px; align-items:center; font-family:var(--display); font-size:14px;
-             font-weight:600; color:var(--noite-2)}
-  .t-ia p{font-size:13px; line-height:1.4; color:var(--texto); margin-top:8px}
-  .t-agencia{flex:none; margin-top:auto; text-align:center; font-size:13px; color:var(--cinza)}
-  .t-pergunta{margin-top:16px}
-  .t-pergunta h3{font-family:var(--display); font-size:20px; font-weight:700; color:var(--noite-2); line-height:1.25}
-  .t-pergunta p{font-size:14px; color:var(--cinza); margin-top:4px}
-  .t-steps{margin-top:16px; display:flex; flex-direction:column; gap:12px}
-  .t-steps .linha{display:flex; gap:10px; align-items:center}
-  .t-steps .num{width:26px; height:26px; flex:none; border-radius:var(--raio); background:var(--azul);
-                color:#fff; font-family:var(--display); font-weight:700; font-size:14px; display:grid; place-items:center}
-  .t-steps .linha span{font-size:15px; line-height:1.3}
-  .t-antes{flex:none; margin-top:14px; border:1px dashed #C5D2E8; border-radius:var(--raio);
-           padding:8px 14px; font-size:13px; color:var(--cinza); line-height:1.35}
-  .t-cta{flex:none; margin-top:auto; height:42px; background:var(--verde); color:#fff; border-radius:21px;
-         display:flex; align-items:center; justify-content:center; font-family:Arial,sans-serif; font-size:15px; font-weight:700}
-  .t-meta{flex:none; margin-top:10px; text-align:center; font-size:13px; color:var(--cinza)}
-  .telas figcaption{margin-top:var(--s2)}
-  .telas figcaption b{display:block; font-family:var(--display); font-size:19px; color:var(--noite)}
-  .telas figcaption span{display:block; font-size:15px; color:var(--cinza); margin-top:4px}
-
-  /* como funciona — 5 ciclos (C1–C5 do paper) */
-  .ciclos{margin-top:var(--s4); display:grid; gap:0; max-width:var(--medida)}
-  .ciclo{display:grid; grid-template-columns:48px 1fr; gap:var(--s2); padding:var(--s3) 0; border-top:2px solid var(--linha)}
-  .ciclo .num{width:48px; height:48px; border-radius:50%; background:var(--azul); color:#fff;
-              font-family:var(--display); font-weight:700; display:grid; place-items:center; font-size:20px}
-  .ciclo .rot{font-family:var(--display); font-size:12px; font-weight:600; letter-spacing:.06em;
-              text-transform:uppercase; color:var(--azul)}
-  .ciclo strong{display:block; font-family:var(--display); font-size:20px; color:var(--noite); font-weight:600; margin-top:2px}
-  .ciclo p{color:var(--cinza); margin-top:4px}
-
-  /* privacidade faixa */
-  .privacidade{margin-top:var(--s4); background:var(--noite); color:#fff; border-radius:var(--raio);
-               padding:var(--s4); max-width:var(--medida); display:flex; gap:var(--s3); align-items:flex-start}
-  .privacidade .ic{flex:none; width:44px; height:44px; border-radius:50%; background:#0C326F;
-                   border:2px solid var(--amarelo); display:grid; place-items:center}
-  .privacidade b{font-family:var(--display); font-size:19px; display:block}
-  .privacidade p{color:#AFC3E4; margin-top:8px; font-size:16px}
-  .privacidade code{font-family:var(--dado); color:#DCE6F7; font-size:14px}
-
-  /* antes × depois */
-  .antes-depois{margin-top:var(--s4); display:grid; grid-template-columns:1fr 1fr; gap:var(--s3)}
-  @media (max-width:760px){ .antes-depois{grid-template-columns:1fr} }
-  .antes-depois figure{border-radius:var(--raio); overflow:hidden; border:2px solid var(--linha); background:var(--branco)}
-  .antes-depois figcaption{padding:var(--s1) var(--s2); border-top:2px solid var(--linha)}
-  .antes-depois figcaption b{font-family:var(--display); font-size:17px; color:var(--noite)}
-  .antes-depois figcaption span{display:block; font-size:14px; color:var(--cinza); margin-top:2px}
-  .ad-corpo{padding:var(--s3)}
-  .ad-antes{font-size:13px; color:var(--cinza); text-align:justify; line-height:1.5}
-  .ad-depois .bloco-simples{font-family:var(--display); font-size:23px; font-weight:700; color:var(--noite-2); line-height:1.3}
-  .ad-depois p{margin-top:var(--s1); font-size:17px}
-  .ad-depois ol{margin-top:var(--s1); padding-left:var(--s3)}
-  .ad-depois .acao{display:inline-flex; align-items:center; min-height:44px; margin-top:var(--s2);
-                   background:var(--verde); color:#fff; font-family:var(--display); font-weight:700;
-                   padding:6px var(--s2); border-radius:var(--raio)}
-
-  /* para quem */
-  .para{margin-top:var(--s4); display:grid; gap:0; max-width:var(--medida)}
-  .para-item{display:grid; grid-template-columns:104px 1fr; gap:var(--s2); align-items:center;
-             padding:var(--s3) 0; border-top:2px solid var(--linha)}
-  .para-item .selo{background:var(--fundo); border:2px solid var(--borda); border-radius:var(--raio);
-                   text-align:center; padding:var(--s1); font-family:var(--display); font-weight:700;
-                   color:var(--noite-2); font-size:15px}
-  .para-item strong{display:block; font-family:var(--display); font-size:20px; color:var(--noite); font-weight:600}
-  .para-item span{color:var(--cinza)}
-
-  /* CTA final */
-  section.final{background:var(--azul); color:#fff; padding-block:var(--s6)}
-  section.final h2{font-family:var(--display); font-weight:700; font-size:clamp(30px,3.6vw,43px);
-                   line-height:1.15; max-width:24ch; letter-spacing:-.5px}
-  section.final p{margin-top:var(--s3); color:#DCE6F7; max-width:var(--medida)}
-  section.final .botao.primario{color:var(--noite)}
-  section.final .botao.fantasma{border-color:#9FBEF0}
-
-  footer{background:var(--noite); color:#9DB3D6; font-size:15px; padding-block:var(--s5); line-height:1.7}
-  footer .conteudo{display:grid; gap:var(--s2)}
-  footer strong{color:#DCE6F7}
-  footer .foot-topo{display:flex; align-items:center; gap:var(--s2); padding-bottom:var(--s3);
-                    border-bottom:1px solid #1B3466; margin-bottom:var(--s2)}
-  footer .foot-topo .nome{font-family:var(--display); font-weight:700; font-size:22px; color:#fff}
-  footer .foot-topo .sub{color:#AFC3E4; font-size:14px}
-
-  /* ── A SESSÃO VIVA (pilha flutuante + voz conversacional) ── */
-  section.sessao{background:var(--noite); color:#fff; position:relative; overflow:hidden}
-  section.sessao::before{content:""; position:absolute; inset:0;
-    background:radial-gradient(110% 80% at 88% 8%, rgba(255,205,7,.10), transparent 55%); pointer-events:none}
-  .sessao .conteudo{position:relative}
-  .sessao .etiqueta{color:#8FA9D6}
-  .sessao h2.titulo{color:#fff}
-  .sessao h2.titulo em{font-style:normal; color:var(--amarelo)}
-  .sessao p.medida{color:#AFC3E4}
-  .sessao .fonte{color:#8FA9D6}
-  .sessao .fonte b{color:#DCE6F7}
-  .sessao .grid{margin-top:var(--s5); display:grid; grid-template-columns:1fr 1fr; gap:var(--s5); align-items:start}
-  @media (max-width:940px){ .sessao .grid{grid-template-columns:1fr} }
-
-  .sv-rol{display:flex; flex-direction:column; gap:var(--s3)}
-  .sv-rol .linha{border-top:1px solid #1B3466; padding-top:var(--s2); max-width:var(--medida)}
-  .sv-rol strong{display:block; font-family:var(--display); font-size:20px; color:#fff}
-  .sv-rol p{color:#AFC3E4; font-size:16px; margin-top:4px}
-
-  .sv-demo{background:var(--branco); color:var(--texto); border-radius:var(--raio);
-           padding:var(--s3); display:flex; flex-direction:column; gap:var(--s2);
-           box-shadow:0 16px 40px rgba(0,0,0,.35)}
-  .sv-demo .rot{font-size:13px; font-weight:700; color:var(--texto)}
-  .sv-campo{position:relative; height:44px; border:1px solid #888; border-radius:4px;
-            display:flex; align-items:center; padding:0 16px; font-family:Arial,Helvetica,sans-serif;
-            font-size:14px; color:#767676; background:#fff}
-  .sv-campo .anel{position:absolute; inset:-6px; border:3px solid var(--amarelo); border-radius:10px;
-                  animation:svPulso 2s ease-in-out infinite}
-  @keyframes svPulso{0%,100%{opacity:1} 50%{opacity:.35}}
-  .sv-marca{position:relative; align-self:flex-start; display:inline-flex; align-items:center; gap:6px;
-            background:var(--noite); color:#fff; border-radius:999px; padding:5px 12px;
-            font-size:13px; font-weight:700; margin-top:14px;
-            box-shadow:0 4px 12px rgba(4,24,63,.4)}
-  .sv-marca::before{content:""; position:absolute; top:-5px; left:16px; width:10px; height:6px;
-            background:var(--noite); clip-path:polygon(50% 0,100% 100%,0 100%)}
-  .sv-marca .pt{width:8px; height:8px; border-radius:50%; background:var(--amarelo); flex:none}
-  .sv-pill{display:flex; align-items:center; gap:12px; background:var(--noite); border-radius:28px;
-           padding:10px 16px; margin-top:var(--s2)}
-  .sv-beacon{position:relative; flex:none; width:36px; height:36px; display:grid; place-items:center}
-  .sv-beacon .nucleo{width:18px; height:18px; border-radius:50%; background:var(--amarelo);
-                     box-shadow:0 0 0 4px rgba(255,205,7,.22)}
-  .sv-beacon .feixe{position:absolute; inset:1px; border-radius:50%;
-                    background:conic-gradient(from 0deg, rgba(255,205,7,.5), transparent 22%, transparent 78%, rgba(255,205,7,.5));
-                    animation:svGirar 3.2s linear infinite}
-  @keyframes svGirar{to{transform:rotate(360deg)}}
-  .sv-onda{flex:1; display:flex; align-items:center; gap:3px; height:28px}
-  .sv-onda i{flex:1; height:4px; border-radius:2px; background:var(--amarelo); animation:svOnda 1.1s ease-in-out infinite}
-  .sv-onda i:nth-child(2n){animation-delay:.15s}
-  .sv-onda i:nth-child(3n){animation-delay:.3s}
-  @keyframes svOnda{0%,100%{transform:scaleY(.5)} 50%{transform:scaleY(2.6)}}
-  .sv-balao{background:var(--noite); border-radius:14px; padding:12px 16px; font-size:14px;
-            line-height:1.5; color:#DCE6F7}
-  .sv-balao .quem{display:block; font-family:var(--display); font-size:11px; font-weight:600;
-                  letter-spacing:.06em; text-transform:uppercase; color:#8FA9D6; margin-bottom:2px}
-  .sv-balao b{color:var(--amarelo)}
-  .sv-legenda{font-size:13px; color:var(--cinza); text-align:center; margin-top:0}
-  .sv-estados{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s2);
-              border-top:1px solid var(--linha); padding-top:var(--s2)}
-  @media (max-width:560px){ .sv-estados{grid-template-columns:repeat(2,1fr)} }
-  .sv-estado .mini{display:flex; align-items:center; gap:6px; background:var(--noite);
-                   border-radius:999px; padding:7px 10px}
-  .sv-estado .mini .nuc{width:12px; height:12px; border-radius:50%; flex:none}
-  .sv-estado .mini .bar{flex:1; height:3px; border-radius:2px}
-  .sv-estado b{display:block; font-family:var(--display); font-size:14px; color:var(--noite); margin-top:6px}
-  .sv-estado span{display:block; font-size:12px; color:var(--cinza); line-height:1.4; margin-top:2px}
-
-  @media (prefers-reduced-motion:reduce){
-    .anel-guia{animation:none}
-    .sv-beacon .feixe,.sv-onda i,.sv-campo .anel{animation:none}
-    html{scroll-behavior:auto}
-    .botao{transition:none}
-  }
-
-  /* ── impressão/PDF: fiel à tela (fundos exatos, sem animação) ── */
-  @media print{
-    *{-webkit-print-color-adjust:exact !important; print-color-adjust:exact !important}
-    html,body{background:#fff}
-    header.barra{position:static; backdrop-filter:none}
-    .anel-guia{animation:none}
-    .privacidade,.telas figure,.antes-depois figure,.linha-problema,.ciclo,.para-item,.aparelho-wrap,.sv-demo{break-inside:avoid}
-    section[id]{scroll-margin-top:0}
-    a{text-decoration:none}
-    @page{size:A4; margin:12mm}
-  }
-</style>
+})();
+</script>
+<link rel="stylesheet" href="assets/farol.css">
 </head>
-<body>
-<a class="pular" href="#problema">Pular para o conteúdo</a>
+<body class="pagina-landing">
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-<header class="barra">
-  <div class="conteudo">
-    <a class="marca" href="#topo" aria-label="Farol — assistente de navegação digital, ir ao topo">
-      <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0C326F"/><path d="M25.4 20.8 8 16v10z" fill="#FFCD07"/><path d="M38.6 20.8 56 16v10z" fill="#FFCD07"/><rect x="20.5" y="48" width="23" height="5" rx="2.5" fill="#fff"/><rect x="23.5" y="26.3" width="17" height="3.2" rx="1.6" fill="#fff"/><path d="M25 48 27.5 29.5h9L39 48z" fill="#fff"/><circle cx="32" cy="20" r="7" fill="#FFCD07"/></svg>
-      <span><span class="nome">Farol</span><span class="sub">assistente de navegação digital</span></span>
+<header class="site-header on-dark" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="#topo" aria-label="Farol, ir ao topo">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0C326F"/><path d="M25.4 20.8 8 16v10z" fill="#FFCD07"/><path d="M38.6 20.8 56 16v10z" fill="#FFCD07"/><rect x="20.5" y="48" width="23" height="5" rx="2.5" fill="#fff"/><rect x="23.5" y="26.3" width="17" height="3.2" rx="1.6" fill="#fff"/><path d="M25 48 27.5 29.5h9L39 48z" fill="#fff"/><circle cx="32" cy="20" r="7" fill="#FFCD07"/></svg>
+      <span class="brand-text"><span class="brand-name">Farol</span><span class="brand-sub">assistente de navegação digital</span></span>
     </a>
-    <nav class="topo" aria-label="Seções da página">
-      <a href="#problema">O problema</a>
-      <a href="#tutoria">Tutoria reversa</a>
+
+    <nav class="main-nav" id="nav-principal" aria-label="Seções da página">
+      <a href="#problema">A proposta</a>
       <a href="#telas">As telas</a>
       <a href="#como">Como funciona</a>
       <a href="#sessao">Sessão viva</a>
       <a href="#para">Para quem</a>
     </nav>
-    <a class="cta-mini" href="#telas">Ver as telas</a>
+
+    <div class="header-actions">
+      <button class="motion-toggle" type="button" data-motion-toggle aria-pressed="false" aria-label="Pausar o movimento da cena">
+        <svg class="motion-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span data-motion-label>Pausar cena</span>
+      </button>
+      <a class="btn btn-small btn-primary" href="#telas">Ver as telas</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-principal" data-menu-toggle>
+        <span class="sr-only">Abrir menu de seções</span>
+        <span class="menu-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+    </div>
   </div>
+  <div class="scroll-progress" aria-hidden="true"><span data-progress></span></div>
 </header>
 
-<main id="topo">
+<main id="conteudo">
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="conteudo">
-      <div>
-        <p class="etiqueta">Projeto SBGAMES 2026 · IFPA Bragança</p>
-        <h1>A internet do Gov.br, explicada <em>passo a passo</em>.</h1>
-        <p class="chamada">Com voz, destaque e paciência — para quem já sofreu frustração diante de uma tela.</p>
-        <p class="sub">O <strong style="color:#DCE6F7">Farol</strong> é o assistente do IAssistente Intergeracional, plataforma de código aberto. Ele guia idosos, PcD e pessoas neurodivergentes nos fluxos do Gov.br, campo por campo — sem que ninguém precise fazer por você.</p>
-        <div class="confianca">
-          <span><b>✓</b> Você executa; ele só ensina</span>
-          <span><b>✓</b> Seus dados ficam no aparelho</span>
-          <span><b>✓</b> Código aberto</span>
+  <section class="hero on-dark" id="topo">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow light">IAssistente Intergeracional · SBGAMES 2026</p>
+        <h1>A internet do Gov.br, explicada <em>como se fosse a primeira vez</em>.</h1>
+        <p class="hero-lead">O <strong>Farol</strong> acende o campo certo, dita o passo em voz alta e espera o seu tempo. Você digita, você decide, você aprende.</p>
+        <ul class="trust-list">
+          <li>Você executa; ele só ensina</li>
+          <li>Seus dados ficam no aparelho</li>
+          <li>Código aberto</li>
+        </ul>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-large" href="#sessao">
+            Acender o Farol
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost btn-large" href="#tutoria">O que é tutoria reversa?</a>
         </div>
-        <div class="ctas">
-          <a class="botao primario" href="#telas">Ver as telas do assistente</a>
-          <a class="botao fantasma" href="#tutoria">O que é tutoria reversa?</a>
-        </div>
+        <p class="hero-note"><b>Prévia pública.</b> O app é um protótipo acadêmico; nada aqui faz por você.</p>
       </div>
 
-      <!-- momento-assinatura: celular real com anel amarelo guiando o CPF -->
-      <div class="aparelho-wrap">
-        <div class="aparelho">
-          <span class="btn-fisico vol-up" aria-hidden="true"></span>
-          <span class="btn-fisico vol-dn" aria-hidden="true"></span>
-          <span class="btn-fisico power" aria-hidden="true"></span>
-          <span class="alto-falante" aria-hidden="true"></span>
-          <div class="tela" role="img" aria-label="Celular Android exibindo o login do gov.br com a camada do Farol guiando o campo do CPF por uma borda amarela pulsante, um balão de voz, a pílula de narração em vidro fosco com brilho de fogo que diz 'o Farol está narrando', e as ações Repetir voz, Explicar diferente e Erro. Barra de status com hora, sinal, Wi-Fi e bateria, e navegação gestual embaixo.">
-            <span class="camera" aria-hidden="true"></span>
-            <div class="statusbar" aria-hidden="true">
-              <span class="esq">14:32</span>
-              <span class="dir">
-                <svg width="13" height="10" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#262627"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#262627"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#262627"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#262627"/></svg>
-                <svg width="13" height="10" viewBox="0 0 24 18" fill="none"><path d="M2 6c5.5-5 14.5-5 20 0" stroke="#262627" stroke-width="2.4" stroke-linecap="round"/><path d="M5.5 10c3.8-3.3 9.2-3.3 13 0" stroke="#262627" stroke-width="2.4" stroke-linecap="round"/><path d="M9 14c1.8-1.5 4.2-1.5 6 0" stroke="#262627" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.4" fill="#262627"/></svg>
-                <svg width="17" height="9" viewBox="0 0 26 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="#262627"/><rect x="2.5" y="2.5" width="15.6" height="7" rx="1.5" fill="#262627"/><path d="M24 4v4a2.2 2.2 0 0 0 0-4z" fill="#262627"/></svg>
-                <span style="font-size:10px">78</span>
-              </span>
+      <div class="hero-visual">
+        <div class="hero-scene" aria-hidden="true">
+          <canvas class="hero-stars" data-stars></canvas>
+          <div class="hero-horizon"></div>
+          <div class="hero-sea"></div>
+
+          <div class="lighthouse">
+            <span class="lh-glow"></span>
+            <span class="lh-rock"></span>
+            <div class="lh-tower">
+              <span class="lh-veil"></span>
+              <span class="lh-struts"></span>
+              <span class="lh-ring" style="--y:0px;--r:104px"></span>
+              <span class="lh-ring" style="--y:20px;--r:99px"></span>
+              <span class="lh-ring" style="--y:40px;--r:94px"></span>
+              <span class="lh-ring" style="--y:60px;--r:89px"></span>
+              <span class="lh-ring" style="--y:80px;--r:84px"></span>
+              <span class="lh-ring" style="--y:100px;--r:79px"></span>
+              <span class="lh-ring" style="--y:120px;--r:74px"></span>
+              <span class="lh-ring" style="--y:140px;--r:69px"></span>
+              <span class="lh-ring" style="--y:160px;--r:64px"></span>
+              <span class="lh-ring" style="--y:180px;--r:59px"></span>
+              <span class="lh-ring" style="--y:200px;--r:54px"></span>
+              <span class="lh-ring" style="--y:220px;--r:50px"></span>
+              <span class="lh-ring" style="--y:240px;--r:46px"></span>
+              <span class="lh-ring" style="--y:260px;--r:42px"></span>
             </div>
-            <div class="appbar" aria-hidden="true">
-              <span class="gov-logo">gov<i>.br</i></span>
-              <span class="pill-atalhos">
-                <svg width="11" height="11" viewBox="0 0 14 14"><rect x="0" y="0" width="4" height="4" rx="1" fill="#1351B4"/><rect x="5" y="0" width="4" height="4" rx="1" fill="#1351B4"/><rect x="10" y="0" width="4" height="4" rx="1" fill="#1351B4"/><rect x="0" y="5" width="4" height="4" rx="1" fill="#1351B4"/><rect x="5" y="5" width="4" height="4" rx="1" fill="#1351B4"/><rect x="10" y="5" width="4" height="4" rx="1" fill="#1351B4"/><rect x="0" y="10" width="4" height="4" rx="1" fill="#1351B4"/><rect x="5" y="10" width="4" height="4" rx="1" fill="#1351B4"/><rect x="10" y="10" width="4" height="4" rx="1" fill="#1351B4"/></svg>
-                Atalhos
-              </span>
-              <span class="pill-entrar">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
-                Entrar
-              </span>
+            <span class="lh-gallery"></span>
+            <span class="lh-roof"></span>
+            <span class="lh-mast"></span>
+            <div class="lh-lantern">
+              <span class="lh-glass"></span>
+              <span class="lh-core"></span>
+              <span class="lh-rotor"><span class="lh-beam"></span><span class="lh-beam b"></span></span>
             </div>
-            <div class="tela-conteudo">
-              <p class="titulo-login">Acesse sua conta</p>
-              <p class="sub-login">Use seu CPF — o Farol explica cada campo.</p>
-              <div class="campo-wrap">
-                <label class="rotulo-campo">Digite seu CPF</label>
-                <div class="input-cpf"><span class="placeholder">000.000.000-00</span><span class="caret"></span></div>
-                <span class="anel-guia" aria-hidden="true"></span>
+          </div>
+
+          <div class="scene-phone-wrap">
+            <div class="device" data-tilt>
+              <span class="device-camera"></span>
+              <div class="device-screen">
+                <div class="screen-status">
+                  <span>14:32</span>
+                  <span class="dir">
+                    <svg width="13" height="10" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1" fill="#262627"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#262627"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#262627"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#262627"/></svg>
+                    <svg width="13" height="10" viewBox="0 0 24 18" fill="none" aria-hidden="true"><path d="M2 6c5.5-5 14.5-5 20 0" stroke="#262627" stroke-width="2.4" stroke-linecap="round"/><path d="M5.5 10c3.8-3.3 9.2-3.3 13 0" stroke="#262627" stroke-width="2.4" stroke-linecap="round"/><path d="M9 14c1.8-1.5 4.2-1.5 6 0" stroke="#262627" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.4" fill="#262627"/></svg>
+                    <svg width="17" height="9" viewBox="0 0 26 12" aria-hidden="true"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="#262627"/><rect x="2.5" y="2.5" width="15.6" height="7" rx="1.5" fill="#262627"/><path d="M24 4v4a2.2 2.2 0 0 0 0-4z" fill="#262627"/></svg>
+                    <span>78</span>
+                  </span>
+                </div>
+                <div class="screen-appbar">
+                  <span class="gov-word">gov<i>.br</i></span>
+                  <span class="pill-gov">
+                    <svg width="10" height="10" viewBox="0 0 14 14" aria-hidden="true"><rect x="0" y="0" width="4" height="4" rx="1" fill="#1351B4"/><rect x="5" y="0" width="4" height="4" rx="1" fill="#1351B4"/><rect x="10" y="0" width="4" height="4" rx="1" fill="#1351B4"/><rect x="0" y="5" width="4" height="4" rx="1" fill="#1351B4"/><rect x="5" y="5" width="4" height="4" rx="1" fill="#1351B4"/><rect x="10" y="5" width="4" height="4" rx="1" fill="#1351B4"/><rect x="0" y="10" width="4" height="4" rx="1" fill="#1351B4"/><rect x="5" y="10" width="4" height="4" rx="1" fill="#1351B4"/><rect x="10" y="10" width="4" height="4" rx="1" fill="#1351B4"/></svg>
+                    Atalhos
+                  </span>
+                  <span class="pill-gov solid">Entrar</span>
+                </div>
+                <div class="screen-body">
+                  <p class="screen-title">Acesse sua conta</p>
+                  <p class="screen-sub">Use seu CPF — o Farol explica cada campo.</p>
+                  <div>
+                    <label class="field-label">Digite seu CPF</label>
+                    <div class="field"><span>000.000.000-00</span><span class="caret"></span><span class="ring"></span></div>
+                  </div>
+                  <div class="btn-gov">Continuar</div>
+                  <div class="screen-note">gov.br · conta única · SERPRO</div>
+                  <div class="screen-bottom">
+                    <div class="voice-bubble">
+                      <span class="voice-avatar" aria-hidden="true">
+                        <svg width="13" height="13" viewBox="0 0 24 24"><path d="M9.5 7.8 3 6v3.8z" fill="#FFCD07"/><path d="M14.5 7.8 21 6v3.8z" fill="#FFCD07"/><rect x="8.8" y="9.9" width="6.4" height="1.2" rx="0.6" fill="#fff"/><path d="M9.4 18 10.3 11.1h3.4L14.6 18z" fill="#fff"/><rect x="7.7" y="18" width="8.6" height="2" rx="1" fill="#fff"/><circle cx="12" cy="7.5" r="2.6" fill="#FFCD07"/></svg>
+                      </span>
+                      <p>Este é o campo do <b>CPF</b>. É o mesmo número da sua carteira. Pode digitar; eu vigio o resto da tela.</p>
+                    </div>
+                    <div class="action-chips"><span>Repetir voz</span><span>Explicar diferente</span><span>Erro?</span></div>
+                    <div class="narration"><span class="dot"></span>o Farol está narrando</div>
+                    <div class="step-dots">PASSO 2 DE 5 <i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                  </div>
+                </div>
+                <div class="nav-pill"><span></span></div>
               </div>
-              <button class="btn-continuar" tabindex="-1">Continuar</button>
-              <div class="selo-serpro" aria-hidden="true"><span>gov.br · conta única</span><span>SERPRO</span></div>
             </div>
-            <div class="camada">
-              <div class="balao">
-                <span class="farol-bolinha" aria-hidden="true">
-                  <svg width="13" height="13" viewBox="0 0 24 24"><path d="M9.5 7.8 3 6v3.8z" fill="#FFCD07"/><path d="M14.5 7.8 21 6v3.8z" fill="#FFCD07"/><rect x="8.8" y="9.9" width="6.4" height="1.2" rx="0.6" fill="#fff"/><path d="M9.4 18 10.3 11.1h3.4L14.6 18z" fill="#fff"/><rect x="7.7" y="18" width="8.6" height="2" rx="1" fill="#fff"/><circle cx="12" cy="7.5" r="2.6" fill="#FFCD07"/></svg>
-                </span>
-                <p>Este é o campo do <b>CPF</b>. É o mesmo número da sua carteira. Pode digitar; eu vigio o resto da tela.</p>
-              </div>
-              <div class="chips" aria-hidden="true"><span>Repetir voz</span><span>Explicar diferente</span><span>Erro?</span></div>
-              <div class="pilha-narracao">
-                <span class="aura" aria-hidden="true"></span>
-                <span class="vidro" aria-hidden="true"></span>
-                <span class="brasa" aria-hidden="true"></span>
-                <span class="linha">
-                  <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="#1351B4"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7" stroke="#1351B4" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-                  <b>o Farol está narrando</b>
-                </span>
-              </div>
-              <p class="passo" aria-hidden="true">PASSO 2 DE 5 <i class="on"></i><i class="on"></i><i></i><i></i><i></i></p>
-            </div>
-            <div class="navbar" aria-hidden="true"><span class="pilha"></span></div>
           </div>
         </div>
-        <p class="legenda-aparelho">A borda amarela é a assinatura do Farol: ela aponta o campo exato enquanto a voz dita o passo. Embaixo, a pílula mostra a narração em andamento — e é sempre você que digita. Aqui, o login real do Gov.br.</p>
+        <div class="hero-scene-bar">
+          <p class="scene-caption"><b>Cena ilustrativa.</b> O feixe encontra o campo do CPF; a voz explica; quem digita é você.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto" aria-labelledby="manifesto-title">
+    <div class="container">
+      <p class="eyebrow">O princípio</p>
+      <h2 class="manifesto-title" id="manifesto-title">Acessibilidade não é o computador ler a tela. <span class="mark">É a tela entender a pessoa.</span></h2>
+      <div class="manifesto-verbs">
+        <div class="verb">
+          <span class="verb-num">01</span>
+          <strong>Aponta</strong>
+          <p>o campo certo, com uma borda amarela por vez.</p>
+        </div>
+        <div class="verb">
+          <span class="verb-num">02</span>
+          <strong>Explica</strong>
+          <p>o passo em voz alta e em linguagem simples.</p>
+        </div>
+        <div class="verb">
+          <span class="verb-num">03</span>
+          <strong>Espera</strong>
+          <p>o seu tempo — e nunca faz por você.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- PROBLEMA -->
-  <section class="bloco" id="problema">
-    <div class="conteudo">
-      <p class="etiqueta">O problema</p>
-      <h2 class="titulo">À tela não falta informação. Falta poder entendê-la.</h2>
-      <p class="medida">Grandes serviços essenciais migraram para a internet. Quem entendia o processo agora precisa entender a interface — e as barreiras cognitivas ficaram de fora do mapa de avaliação de conformidade.</p>
-      <div class="lista-problema">
-        <div class="linha-problema"><span class="num" aria-hidden="true">01</span><div><strong>Leitores de tela estáticos não resolvem</strong><span>As diretrizes WCAG 2.1 existem, mas o cumprimento no dia a dia das páginas que mais usamos não alcança o pilar essencial da acessibilidade: a compreensibilidade.</span></div></div>
-        <div class="linha-problema"><span class="num" aria-hidden="true">02</span><div><strong>Ajuda de terceiros vira dependência</strong><span>A “solução” de hoje é pedir ajuda a alguém — que, então, vê suas senhas e seus documentos. Isso troca uma barreira por outro problema: sua privacidade.</span></div></div>
-        <div class="linha-problema"><span class="num" aria-hidden="true">03</span><div><strong>O erro é punido com jargão</strong><span>Quando algo falha, o portal costuma devolver mensagens técnicas. Para quem tem medo de “errar o passo”, cada mensagem dessas reforça a ideia de que “internet não é para mim”.</span></div></div>
+  <section class="section section-problem" id="problema">
+    <div class="container problem-grid">
+      <div class="problem-head">
+        <p class="eyebrow">O problema</p>
+        <h2>À tela não falta informação. <em>Falta poder entendê-la.</em></h2>
+        <p class="lead">Grandes serviços essenciais migraram para a internet. Quem entendia o processo agora precisa entender a interface — e as barreiras cognitivas ficaram de fora do mapa de avaliação de conformidade.</p>
+        <p class="source"><b>Fonte:</b> paper IAssistente Intergeracional — Resumo e Introdução (WCAG 2.1/W3C · WCGE 2024 · IHC 2025).</p>
       </div>
-      <p class="fonte">Fonte: paper <b>IAssistente Intergeracional</b> — Resumo e Introdução (referências: WCAG 2.1/W3C · WCGE 2024 · IHC 2025).</p>
+      <div>
+        <ol class="problem-list">
+          <li class="problem-item">
+            <span class="num" aria-hidden="true">01</span>
+            <div>
+              <h3>Leitores de tela estáticos não resolvem</h3>
+              <p>As diretrizes WCAG 2.1 existem, mas o cumprimento no dia a dia das páginas que mais usamos não alcança o pilar essencial da acessibilidade: a compreensibilidade.</p>
+            </div>
+          </li>
+          <li class="problem-item">
+            <span class="num" aria-hidden="true">02</span>
+            <div>
+              <h3>Ajuda de terceiros vira dependência</h3>
+              <p>A “solução” de hoje é pedir ajuda a alguém — que, então, vê suas senhas e seus documentos. Isso troca uma barreira por outro problema: a sua privacidade.</p>
+            </div>
+          </li>
+          <li class="problem-item">
+            <span class="num" aria-hidden="true">03</span>
+            <div>
+              <h3>O erro é punido com jargão</h3>
+              <p>Quando algo falha, o portal costuma devolver mensagens técnicas. Para quem tem medo de “errar o passo”, cada mensagem dessas reforça a ideia de que “internet não é para mim”.</p>
+            </div>
+          </li>
+        </ol>
+        <p class="problem-close">O Farol não é mais uma camada de acessibilidade. <b>É uma camada de compreensão.</b></p>
+      </div>
     </div>
   </section>
 
   <!-- TUTORIA REVERSA -->
-  <section class="bloco zebra" id="tutoria">
-    <div class="conteudo">
-      <p class="etiqueta">O conceito</p>
-      <h2 class="titulo">Tutoria reversa: o assistente ensina. Você executa.</h2>
-      <div class="definicao">
-        <p>Na tutoria tradicional, o tutor humano faz por você — e você aprende pouco. Na <strong>tutoria reversa</strong>, quem ensina é a máquina, e quem executa, decide e aprende é a pessoa. O resultado não é uma tarefa concluída: <strong>é autonomia mantida</strong>.</p>
-        <p>Nos sistemas que você mais usa, o Farol guarda um “roteiro” próprio (uma <em>skill</em>), que evolui a cada sessão — orientação mais precisa e mais leve. E ele pesquisa sozinho o que precisar aprender. O Gov.br é o primeiro; qualquer outra tela pode entrar na lista.</p>
+  <section class="section section-tutoria on-dark" id="tutoria">
+    <div class="container tutoria-grid">
+      <div class="tutoria-copy">
+        <p class="eyebrow light">A virada</p>
+        <h2>O assistente ensina. <em>Você executa.</em></h2>
+        <div class="definition">
+          <p>Na tutoria tradicional, o tutor humano faz por você — e você aprende pouco. Na <strong>tutoria reversa</strong>, quem ensina é a máquina, e quem executa, decide e aprende é a pessoa. O resultado não é uma tarefa concluída: <em>é autonomia mantida</em>.</p>
+          <p>Nos sistemas que você mais usa, o Farol guarda um “roteiro” próprio (uma <em>skill</em>), que evolui a cada sessão — orientação mais precisa e mais leve. E ele pesquisa sozinho o que precisar aprender. O Gov.br é o primeiro; qualquer outra tela pode entrar na lista.</p>
+        </div>
+        <ul class="principle-list">
+          <li><strong>Voz</strong><span>cada passo dito em voz alta, no ritmo de quem ouve.</span></li>
+          <li><strong>Destaque</strong><span>uma borda amarela por vez; nunca duas coisas ao mesmo tempo.</span></li>
+          <li><strong>Paciência</strong><span>o Farol espera. Não preenche, não clica, não decide.</span></li>
+        </ul>
+      </div>
+      <div class="lens-wrap">
+        <div class="lens-board" aria-hidden="true">
+          <div class="lens" data-tilt>
+            <span class="lens-ring r1"></span>
+            <span class="lens-ring r2"></span>
+            <span class="lens-ring r3"></span>
+            <span class="lens-ring r4"></span>
+            <span class="lens-ring r5"></span>
+            <span class="lens-ring r6"></span>
+            <span class="lens-core"></span>
+            <span class="lens-beam"></span>
+          </div>
+          <span class="lens-label l1"><i></i>voz</span>
+          <span class="lens-label l2"><i></i>destaque</span>
+          <span class="lens-label l3"><i></i>paciência</span>
+        </div>
+        <p class="lens-caption">Uma lente, três cuidados: o feixe concentra a atenção no que importa agora.</p>
       </div>
     </div>
   </section>
 
   <!-- AS TRÊS TELAS -->
-  <section class="bloco" id="telas">
-    <div class="conteudo">
-      <p class="etiqueta">O produto</p>
-      <h2 class="titulo">As três telas do Farol.</h2>
-      <p class="medida">Guiar campo a campo, traduzir o erro e reconstruir a página em blocos: cada tela resolve uma parte da jornada.</p>
-      <div class="telas">
-        <!-- (a) TUTORIA PASSO A PASSO -->
-        <figure>
-          <div class="t-telefone" role="img" aria-label="Mockup (a): tela Entrar com gov.br com campo CPF destacado por borda amarela, balão de voz e ações Repetir voz, Explicar diferente e Erro, e indicador Passo 2 de 5.">
-            <div class="t-screen">
-              <div class="t-gov"><span class="ponto"></span><b>gov.br</b></div>
-              <p class="t-tela">Entrar com gov.br</p>
-              <p class="t-helper">Informe seu CPF para continuar</p>
-              <div class="t-campo"><span class="anel" aria-hidden="true"></span>000.000.000-00</div>
-              <p class="t-dica">o Farol está guiando este campo</p>
-              <div class="t-btn">Continuar</div>
-              <p class="t-proximo">próximo passo · digitar a senha</p>
-              <div class="t-fala">
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="#FFCD07"/><path d="M16 8a5 5 0 0 1 0 8" stroke="#FFCD07" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M18.5 5.5a9 9 0 0 1 0 13" stroke="#FFCD07" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-                <p>Digite o número do seu <b>CPF</b> no campo com a borda amarela.</p>
-              </div>
-              <div class="t-acoes"><span>Repetir voz</span><span>Explicar diferente</span><span>Erro?</span></div>
-              <p class="t-passo">PASSO 2 DE 5 <i class="on"></i><i class="on"></i><i></i><i></i><i></i></p>
-            </div>
-          </div>
-          <figcaption><b>(a) Tutoria passo a passo</b><span>destaque + voz guiando cada campo</span></figcaption>
-        </figure>
-        <!-- (b) ERRO TRADUZIDO -->
-        <figure>
-          <div class="t-telefone" role="img" aria-label="Mockup (b): o portal gov.br mostra um erro técnico vermelho; o Farol traduz para linguagem simples e oferece as ações Liberar acesso aqui e Voltar.">
-            <div class="t-screen">
-              <div class="t-gov"><span class="ponto"></span><b>gov.br</b></div>
-              <p class="t-tela">Entrar com gov.br</p>
-              <div class="t-campo">000.000.000-00</div>
-              <p class="t-erro">ERRO 422: cpf_already_linked</p>
-              <p class="t-proximo">posso ler em voz alta para você</p>
-              <div class="t-ia">
-                <div class="cab">
-                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="#1351B4"/><path d="M16 8a5 5 0 0 1 0 8" stroke="#1351B4" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M18.5 5.5a9 9 0 0 1 0 13" stroke="#1351B4" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-                  O Farol traduziu o erro:
+  <section class="section section-telas" id="telas">
+    <div class="container section-head center">
+      <p class="eyebrow">O produto</p>
+      <h2>Três telas. <em>Uma mesma promessa: nada acontece sem você.</em></h2>
+      <p class="lead">Guiar campo a campo, traduzir o erro e reconstruir a página em blocos. Em todas, o Farol aponta e explica; quem decide é você.</p>
+    </div>
+
+    <div class="stage on-dark">
+      <div class="stage-grid" aria-hidden="true"></div>
+      <div class="container stage-inner">
+        <div class="layer-legend">
+          <span><b>01</b> portal gov.br</span>
+          <span><b>02</b> camada Farol</span>
+          <span><b>03</b> você decide</span>
+        </div>
+        <p class="telas-scroll-hint" aria-hidden="true">Deslize para o lado para ver as três telas <span>→</span></p>
+
+        <div class="telas-grid">
+          <figure class="tela-card" data-tilt>
+            <div class="device" role="img" aria-label="Tela (a): login do gov.br com o campo do CPF destacado por uma borda amarela, um balão de voz do Farol e as ações Repetir voz, Explicar diferente e Erro. Passo 2 de 5.">
+              <span class="device-camera"></span>
+              <div class="device-screen">
+                <div class="screen-status"><span>14:32</span><span class="dir"><span>78%</span></span></div>
+                <div class="screen-appbar"><span class="gov-word">gov<i>.br</i></span><span class="pill-gov solid">Entrar</span></div>
+                <div class="screen-body">
+                  <p class="screen-title">Entrar com gov.br</p>
+                  <p class="screen-sub">Informe seu CPF para continuar</p>
+                  <div>
+                    <label class="field-label">Digite seu CPF</label>
+                    <div class="field"><span>000.000.000-00</span><span class="ring"></span></div>
+                  </div>
+                  <div class="btn-gov">Continuar</div>
+                  <p class="screen-note">próximo passo · digitar a senha</p>
+                  <div class="screen-bottom">
+                    <div class="voice-bubble">
+                      <span class="voice-avatar" aria-hidden="true">
+                        <svg width="13" height="13" viewBox="0 0 24 24"><path d="M9.5 7.8 3 6v3.8z" fill="#FFCD07"/><path d="M14.5 7.8 21 6v3.8z" fill="#FFCD07"/><rect x="8.8" y="9.9" width="6.4" height="1.2" rx="0.6" fill="#fff"/><path d="M9.4 18 10.3 11.1h3.4L14.6 18z" fill="#fff"/><rect x="7.7" y="18" width="8.6" height="2" rx="1" fill="#fff"/><circle cx="12" cy="7.5" r="2.6" fill="#FFCD07"/></svg>
+                      </span>
+                      <p>Digite o número do seu <b>CPF</b> no campo com a borda amarela.</p>
+                    </div>
+                    <div class="action-chips"><span>Repetir voz</span><span>Explicar diferente</span><span>Erro?</span></div>
+                    <div class="step-dots">PASSO 2 DE 5 <i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                  </div>
                 </div>
-                <p>Este CPF já tem uma conta ativa em outro aparelho. O gov.br permite um aparelho por vez — podemos liberar o acesso aqui.</p>
-                <div class="t-acoes"><span>Liberar acesso aqui</span><span>Voltar</span></div>
+                <div class="nav-pill"><span></span></div>
               </div>
-              <p class="t-agencia">você decide; o Farol só explica</p>
+            </div>
+            <figcaption>
+              <span class="tela-index" aria-hidden="true">a</span>
+              <h3>O campo certo, aceso.</h3>
+              <p>A borda amarela e a voz apontam o mesmo campo. O Farol espera você digitar.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="tela-card" data-tilt>
+            <div class="device" role="img" aria-label="Tela (b): o portal gov.br mostra um erro técnico vermelho; o Farol traduz para linguagem simples e oferece as ações Liberar acesso aqui e Voltar, com a frase você decide.">
+              <span class="device-camera"></span>
+              <div class="device-screen">
+                <div class="screen-status"><span>14:32</span><span class="dir"><span>78%</span></span></div>
+                <div class="screen-appbar"><span class="gov-word">gov<i>.br</i></span><span class="pill-gov solid">Entrar</span></div>
+                <div class="screen-body">
+                  <p class="screen-title">Entrar com gov.br</p>
+                  <div class="field"><span>000.000.000-00</span></div>
+                  <p class="error-tech">ERRO 422: cpf_already_linked</p>
+                  <p class="screen-note">posso ler em voz alta para você</p>
+                  <div class="translation">
+                    <div class="head">
+                      <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="#1351B4"/><path d="M16 8a5 5 0 0 1 0 8" stroke="#1351B4" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                      O Farol traduziu o erro:
+                    </div>
+                    <p>Este CPF já tem uma conta ativa em outro aparelho. O gov.br permite um aparelho por vez — podemos liberar o acesso aqui.</p>
+                    <div class="action-chips" style="padding-left:0;margin-top:8px"><span>Liberar acesso aqui</span><span>Voltar</span></div>
+                  </div>
+                  <p class="agency-note">você decide; o Farol só explica</p>
+                </div>
+                <div class="nav-pill"><span></span></div>
+              </div>
+            </div>
+            <figcaption>
+              <span class="tela-index" aria-hidden="true">b</span>
+              <h3>O jargão vira uma frase humana.</h3>
+              <p>O erro técnico fica disponível, mas a primeira leitura é simples — e as ações são suas.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="tela-card" data-tilt>
+            <div class="device" role="img" aria-label="Tela (c): modo simples do portal, com a pergunta Você quer pedir um benefício, três passos numerados, aviso sobre a página original e botão verde Continuar.">
+              <span class="device-camera"></span>
+              <div class="device-screen">
+                <div class="screen-status"><span>14:32</span><span class="dir"><span>78%</span></span></div>
+                <div class="screen-appbar"><span class="gov-word">gov<i>.br</i></span><span class="pill-gov solid">MODO SIMPLES</span></div>
+                <div class="screen-body">
+                  <p class="simple-question">Você quer…<br>pedir um benefício?</p>
+                  <p class="simple-lead">escolhemos a parte útil da página para você</p>
+                  <div class="simple-steps">
+                    <div class="simple-step"><span class="num" aria-hidden="true">1</span><span>Preencher seus dados</span></div>
+                    <div class="simple-step"><span class="num" aria-hidden="true">2</span><span>Conferir com o Farol</span></div>
+                    <div class="simple-step"><span class="num" aria-hidden="true">3</span><span>Enviar e confirmar</span></div>
+                  </div>
+                  <p class="simple-note">A página original tinha 14 blocos e 3 anúncios. Aqui: um bloco por vez.</p>
+                  <div class="screen-bottom">
+                    <div class="btn-gov verde">Continuar</div>
+                    <p class="screen-meta">Fonte grande · sem anúncios · um bloco por vez</p>
+                  </div>
+                </div>
+                <div class="nav-pill"><span></span></div>
+              </div>
+            </div>
+            <figcaption>
+              <span class="tela-index" aria-hidden="true">c</span>
+              <h3>A página inteira em um bloco.</h3>
+              <p>Menos ruído, fonte maior e um caminho único. O portal original continua a um toque.</p>
+            </figcaption>
+          </figure>
+        </div>
+
+        <p class="stage-note"><b>Mockups ilustrativos.</b> Reproduzidos da figura de mockups do paper. Textos demonstrativos — nada aqui é dependência de funcionalidade ainda não implementada.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section section-como" id="como">
+    <div class="container como-grid">
+      <div class="como-head">
+        <p class="eyebrow">Como funciona</p>
+        <h2>Cinco ciclos. <em>Uma tela de cada vez.</em></h2>
+        <p class="lead">A cada tela do portal, o Farol repete o mesmo ciclo — do que ele “enxerga” até o que ele aprende com você.</p>
+
+        <div class="privacy-card">
+          <p class="kicker">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 11 4.6-2.6 8-6 8-11V5l-8-3z" stroke="#FFCD07" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#FFCD07" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            O que sai do aparelho
+          </p>
+          <div class="privacy-diagram">
+            <div class="privacy-side">
+              <span class="tag">fica</span>
+              <strong>o que você digita</strong>
+              <span>CPF · senha · documentos</span>
+            </div>
+            <div class="privacy-filter">filtro local</div>
+            <div class="privacy-side">
+              <span class="tag">viaja</span>
+              <strong>a estrutura da tela</strong>
+              <span>rótulos · hierarquia · estado</span>
             </div>
           </div>
-          <figcaption><b>(b) Erro traduzido</b><span>jargão técnico vira linguagem de gente</span></figcaption>
-        </figure>
-        <!-- (c) MODO SIMPLES -->
-        <figure>
-          <div class="t-telefone" role="img" aria-label="Mockup (c): modo simples do portal, com a pergunta Você quer pedir um benefício, três passos numerados, aviso sobre a página original e botão verde Continuar.">
-            <div class="t-screen">
-              <div class="t-gov"><span class="ponto"></span><b>gov.br</b><span class="pill">MODO SIMPLES</span></div>
-              <div class="t-pergunta">
-                <h3>Você quer…<br>pedir um benefício?</h3>
-                <p>escolhemos a parte útil da página para você</p>
-              </div>
-              <div class="t-steps">
-                <div class="linha"><span class="num" aria-hidden="true">1</span><span>Preencher seus dados</span></div>
-                <div class="linha"><span class="num" aria-hidden="true">2</span><span>Conferir com o Farol</span></div>
-                <div class="linha"><span class="num" aria-hidden="true">3</span><span>Enviar e confirmar</span></div>
-              </div>
-              <p class="t-antes">A página original tinha 14 blocos e 3 anúncios. Aqui: um bloco por vez.</p>
-              <div class="t-cta">Continuar</div>
-              <p class="t-meta">Fonte grande · sem anúncios · um bloco por vez</p>
+          <p>Só a <code>estrutura da página</code> — sem seus dados digitados — vai para a nuvem, sob a LGPD: consentimento, minimização e retenção mínima. O app roda sem a API restrita de acessibilidade do Android.</p>
+        </div>
+      </div>
+
+      <div>
+        <ol class="cycles">
+          <li class="cycle" data-reveal>
+            <span class="cycle-num" aria-hidden="true">1</span>
+            <div>
+              <span class="rot">Captura</span>
+              <h3>Ele enxerga a tela</h3>
+              <p>No navegador embutido no app, a cada mudança relevante o Farol faz um retrato estruturado: árvore de acessibilidade, rótulos dos campos e o estado visível (foco, erros, avisos).</p>
             </div>
-          </div>
-          <figcaption><b>(c) Modo simples</b><span>página reconstruída em blocos</span></figcaption>
-        </figure>
+          </li>
+          <li class="cycle" data-reveal style="--delay:80ms">
+            <span class="cycle-num" aria-hidden="true">2</span>
+            <div>
+              <span class="rot">Saneamento</span>
+              <h3>Seus dados ficam no aparelho</h3>
+              <p>Um filtro de privacidade local apaga valores digitados, senhas e máscaras de documento. Só papéis, rótulos e hierarquia seguem viagem.</p>
+            </div>
+          </li>
+          <li class="cycle" data-reveal style="--delay:160ms">
+            <span class="cycle-num" aria-hidden="true">3</span>
+            <div>
+              <span class="rot">Decisão de roteiro</span>
+              <h3>Cache ou nuvem</h3>
+              <p>Fluxo já conhecido? A skill em cache responde na hora, sem internet. Fluxo novo? A estrutura saneada vai ao modelo de IA, que monta e valida um plano de orientação.</p>
+            </div>
+          </li>
+          <li class="cycle" data-reveal style="--delay:240ms">
+            <span class="cycle-num" aria-hidden="true">4</span>
+            <div>
+              <span class="rot">Orientação multimodal</span>
+              <h3>Destaque + voz + texto</h3>
+              <p>A borda amarela aponta o alvo, a voz dita a instrução simples e o Farol espera você executar — confirmando o sucesso, reformulando o passo ou traduzindo o erro.</p>
+            </div>
+          </li>
+          <li class="cycle" data-reveal style="--delay:320ms">
+            <span class="cycle-num" aria-hidden="true">5</span>
+            <div>
+              <span class="rot">Aprendizado</span>
+              <h3>O suporte vai afinando</h3>
+              <p>Ao concluir, os acertos e travamentos alimentam a skill e o cache. Conforme você domina o fluxo, as instruções ficam mais leves — a autonomia vem primeiro.</p>
+            </div>
+          </li>
+        </ol>
+        <p class="source como-source"><b>Ciclos C1–C5 e salvaguardas de privacidade</b> conforme a Metodologia do paper (RNF03 · RNF04 · RNF05).</p>
       </div>
-      <p class="fonte">Telas ilustrativas, reproduzidas da figura de mockups do paper. Textos demonstrativos — nada aqui é dependência de funcionalidade ainda não implementada.</p>
     </div>
   </section>
 
-  <!-- COMO FUNCIONA (5 ciclos do paper) -->
-  <section class="bloco zebra" id="como">
-    <div class="conteudo">
-      <p class="etiqueta">Como funciona</p>
-      <h2 class="titulo">Cinco ciclos, uma tela de cada vez.</h2>
-      <p class="medida">A cada tela do portal, o Farol repete o mesmo ciclo — do que ele “enxerga” até o que ele aprende com você.</p>
-      <div class="ciclos">
-        <div class="ciclo"><span class="num" aria-hidden="true">1</span><div><span class="rot">Captura</span><strong>Ele enxerga a tela</strong><p>No navegador embutido no app, a cada mudança relevante o Farol faz um retrato estruturado: árvore de acessibilidade, rótulos dos campos e o estado visível (foco, erros, avisos).</p></div></div>
-        <div class="ciclo"><span class="num" aria-hidden="true">2</span><div><span class="rot">Saneamento</span><strong>Seus dados ficam no aparelho</strong><p>Um filtro de privacidade local apaga valores digitados, senhas e máscaras de documento. Só papéis, rótulos e hierarquia seguem viagem.</p></div></div>
-        <div class="ciclo"><span class="num" aria-hidden="true">3</span><div><span class="rot">Decisão de roteiro</span><strong>Cache ou nuvem</strong><p>Fluxo já conhecido? A skill em cache responde na hora, sem internet. Fluxo novo? A estrutura saneada vai ao modelo de IA, que monta e valida um plano de orientação.</p></div></div>
-        <div class="ciclo"><span class="num" aria-hidden="true">4</span><div><span class="rot">Orientação multimodal</span><strong>Destaque + voz + texto</strong><p>A borda amarela aponta o alvo, a voz dita a instrução simples e o Farol espera você executar — confirmando o sucesso, reformulando o passo ou traduzindo o erro.</p></div></div>
-        <div class="ciclo"><span class="num" aria-hidden="true">5</span><div><span class="rot">Aprendizado</span><strong>O suporte vai afinando</strong><p>Ao concluir, os acertos e travamentos alimentam a skill e o cache. Conforme você domina o fluxo, as instruções ficam mais leves — a autonomia vem primeiro.</p></div></div>
+  <!-- SESSÃO VIVA -->
+  <section class="section section-sessao on-dark" id="sessao">
+    <div class="container sessao-grid" data-session>
+      <div class="sessao-copy">
+        <p class="eyebrow light">A segunda UI · Sessão viva</p>
+        <h2>Quando o Farol <em>acende e conversa.</em></h2>
+        <p class="lead">Quando a conversa começa, uma pílula noite flutua no rodapé da própria tela — o mesmo formato que o Gemini Live adotou ao abandonar a tela cheia em abril de 2026. O portal continua visível: o anel amarelo aponta o campo e a pílula pulsa no ritmo da fala.</p>
+
+        <div class="session-controls">
+          <div class="state-tabs" role="tablist" aria-label="Estados da sessão viva">
+            <button type="button" role="tab" id="tab-ocioso" aria-controls="painel-sessao" aria-selected="false" tabindex="-1" data-state="ocioso"><span class="tab-dot" aria-hidden="true"></span>Ocioso</button>
+            <button type="button" role="tab" id="tab-ouvindo" aria-controls="painel-sessao" aria-selected="true" tabindex="0" data-state="ouvindo"><span class="tab-dot" aria-hidden="true"></span>Ouvindo</button>
+            <button type="button" role="tab" id="tab-pensando" aria-controls="painel-sessao" aria-selected="false" tabindex="-1" data-state="pensando"><span class="tab-dot" aria-hidden="true"></span>Pensando</button>
+            <button type="button" role="tab" id="tab-falando" aria-controls="painel-sessao" aria-selected="false" tabindex="-1" data-state="falando"><span class="tab-dot" aria-hidden="true"></span>Falando</button>
+          </div>
+          <button class="play-toggle" type="button" data-session-play aria-pressed="false">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+            <span data-play-label>Reproduzir a sessão</span>
+          </button>
+        </div>
+
+        <div class="session-panel" id="painel-sessao" role="tabpanel" aria-labelledby="tab-ouvindo" tabindex="0">
+          <p class="what">O que está acontecendo</p>
+          <p class="state-title" data-session-title>Ouvindo</p>
+          <p class="state-desc" data-session-desc>é a sua vez de falar</p>
+          <p class="transcript"><span class="who" data-session-who>Você</span><span data-session-line>“Não sei onde digitar meu CPF.”</span></p>
+        </div>
+
+        <a class="text-link" href="farol-sessao-viva.html">Abrir a prancha completa da Sessão Viva
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
 
-      <div class="privacidade">
-        <span class="ic" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 11 4.6-2.6 8-6 8-11V5l-8-3z" stroke="#FFCD07" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#FFCD07" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <div>
-          <b>Suas credenciais nunca saem do seu aparelho.</b>
-          <p>Só a <code>estrutura da página</code> — sem seus dados digitados — vai para a nuvem, e continua sob a LGPD: consentimento, minimização e retenção mínima. O app roda sem a API restrita de acessibilidade do Android, então não pede permissões especiais.</p>
+      <div class="sessao-stage">
+        <div class="sessao-glow" aria-hidden="true"></div>
+        <div class="device device-live" data-session-phone data-estado="ouvindo" data-tilt role="img" aria-label="Simulação da sessão viva: tela do gov.br com o campo do CPF cercado por uma borda amarela, o marcador 'aqui — o campo com a borda amarela' abaixo, e a pílula de voz noite com onda amarela e legenda ao vivo.">
+          <span class="device-camera"></span>
+          <div class="device-screen">
+            <div class="screen-status"><span>14:32</span><span class="dir"><span>78%</span></span></div>
+            <div class="screen-appbar"><span class="gov-word">gov<i>.br</i></span><span class="pill-gov solid">Entrar</span></div>
+            <div class="live-body">
+              <div class="live-portal">
+                <p class="screen-title">Acesse sua conta</p>
+                <div class="field-wrap" style="position:relative;margin-bottom:24px">
+                  <label class="field-label">Digite seu CPF</label>
+                  <div class="field"><span>000.000.000-00</span><span class="ring"></span></div>
+                  <span class="live-marker"><span class="pt"></span>aqui — o campo com a borda amarela</span>
+                </div>
+                <div class="ghost-field">Senha</div>
+                <div class="btn-gov">Continuar</div>
+              </div>
+              <div class="live-overlay">
+                <p class="live-transcript"><span class="who" data-live-who>Você</span><span data-live-line>“Não sei onde digitar meu CPF.”</span></p>
+                <div class="live-pill">
+                  <span class="live-beacon" aria-hidden="true"><span class="live-feixe"></span><span class="live-core"></span></span>
+                  <span class="live-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                  <span class="live-mic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="#FFCD07"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="#FFCD07" stroke-width="2" stroke-linecap="round"/></svg></span>
+                  <span class="live-end" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14c4-4 12-4 16 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/></svg></span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-pill"><span></span></div>
+          </div>
         </div>
+        <p class="sessao-caption"><b>Simulação ilustrativa.</b> A sessão conversacional é evolução pós-MVP; a voz nativa em pt-BR já está prevista no paper (RF03).</p>
       </div>
-      <p class="fonte">Ciclos C1–C5 e salvaguardas de privacidade conforme a Metodologia do paper (RNF03 · RNF04 · RNF05).</p>
     </div>
   </section>
 
-  <!-- A SESSÃO VIVA -->
-  <section class="bloco sessao" id="sessao">
-    <div class="conteudo">
-      <p class="etiqueta">A sessão viva</p>
-      <h2 class="titulo">Quando o Farol <em>acende</em> e conversa.</h2>
-      <p class="medida">Quando a conversa começa, uma pílula noite flutua no rodapé da própria tela — o mesmo formato que o Gemini Live adotou ao abandonar a tela cheia em abril de 2026. O portal continua visível: o anel amarelo aponta o campo e a pilha do Farol pulsa no ritmo da fala.</p>
-
-      <div class="grid">
-        <div class="sv-rol">
-          <div class="linha">
-            <strong>Você fala; ele aponta onde clicar</strong>
-            <p>O anel amarelo e o marcador “aqui” mostram exatamente o campo do qual estamos falando — a voz e o destaque apontam o mesmo lugar, e quem executa é você.</p>
-          </div>
-          <div class="linha">
-            <strong>A legenda fica à vista</strong>
-            <p>O balão sob a pílula é a legenda ao vivo: mostra quem está falando e o que foi dito, sempre em texto — nada da conversa depende só do áudio.</p>
-          </div>
-          <div class="linha">
-            <strong>Voz em pt-BR que espera você terminar</strong>
-            <p>A conversa é planejada no GPT-Live (OpenAI): escuta e fala ao mesmo tempo e não interrompe quando você pensa. Entra como evolução do MVP — que já nasce com voz nativa em pt-BR.</p>
-          </div>
-          <div class="linha">
-            <strong>Quatro estados, nunca só cor</strong>
-            <p>Ocioso, ouvindo, pensando e falando: cada estado tem sua cor e também sua legenda em texto.</p>
-          </div>
-        </div>
-
-        <div class="sv-demo" role="img" aria-label="Demonstração da sessão viva: campo do CPF cercado de borda amarela com o marcador 'aqui — o campo com a borda amarela' abaixo, pílula de voz noite com farol aceso e onda amarela, balão de legenda do Farol, e os quatro estados da pilha: ocioso, ouvindo, pensando e falando.">
-          <span class="rot">Digite seu CPF</span>
-          <div class="sv-campo">000.000.000-00<span class="anel" aria-hidden="true"></span></div>
-          <span class="sv-marca"><span class="pt" aria-hidden="true"></span>aqui — o campo com a borda amarela</span>
-          <div class="sv-pill" aria-hidden="true">
-            <span class="sv-beacon"><span class="feixe"></span><span class="nucleo"></span></span>
-            <span class="sv-onda"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-          </div>
-          <p class="sv-balao"><span class="quem">Farol</span>“Este é o campo do <b>CPF</b>. Pode digitar; eu vigio o resto da tela.”</p>
-          <p class="sv-legenda">A pílula é a sessão; o balão, a legenda ao vivo.</p>
-          <div class="sv-estados">
-            <div class="sv-estado"><span class="mini" aria-hidden="true"><span class="nuc" style="background:#6E85C2"></span><span class="bar" style="background:#2A4680"></span></span><b>Ocioso</b><span>sessão aberta, em silêncio</span></div>
-            <div class="sv-estado"><span class="mini" aria-hidden="true"><span class="nuc" style="background:#FFCD07"></span><span class="bar" style="background:#FFCD07"></span></span><b>Ouvindo</b><span>é a sua vez de falar</span></div>
-            <div class="sv-estado"><span class="mini" aria-hidden="true"><span class="nuc" style="background:#DCE6F7"></span><span class="bar" style="background:#6E85C2"></span></span><b>Pensando</b><span>feixe do farol girando</span></div>
-            <div class="sv-estado"><span class="mini" aria-hidden="true"><span class="nuc" style="background:#FFFFFF"></span><span class="bar" style="background:#FFFFFF"></span></span><b>Falando</b><span>onda branca — o Farol fala</span></div>
-          </div>
-        </div>
+  <!-- ANTES x DEPOIS -->
+  <section class="section section-simples" id="simples">
+    <div class="container">
+      <div class="section-head center">
+        <p class="eyebrow">O modo simples</p>
+        <h2>De janela barulhenta para <em>um bloco de cada vez.</em></h2>
+        <p class="lead">O mesmo conteúdo, com outra gramática visual. <span class="only-desktop">Arraste a linha do feixe para comparar.</span><span class="only-mobile">No celular, os dois lados aparecem em sequência.</span></p>
       </div>
 
-      <p class="fonte">Inspirado na pílula do <b>Gemini Live</b> (redesign que removeu a tela cheia — 9to5Google, 19/04/2026) e na escuta contínua do <b>GPT-Live</b> da OpenAI (08/07/2026). A sessão conversacional é evolução do MVP; a voz nativa em pt-BR já é prevista no paper (RF03). Acessos em 23/10/2026 · re-verificação ao vivo em 25/10/2026.</p>
-    </div>
-  </section>
-
-  <!-- ANTES × DEPOIS -->
-  <section class="bloco" id="simples">
-    <div class="conteudo">
-      <p class="etiqueta">O modo simples</p>
-      <h2 class="titulo">De janela barulhenta para um bloco de cada vez.</h2>
-      <div class="antes-depois">
-        <figure>
-          <div class="ad-corpo ad-antes">
-            Ao acessar este portal, o usuário declara ter ciência de que os procedimentos estabelecidos no §4 do regulamento específico de serviço dependem de comprovação prévia de conformidade funcional, conforme critérios de gratuidade interministeriais vigentes, sob pena de indeferimento da solicitação.
-          </div>
-          <figcaption><b>Hoje</b><span>texto denso, margens pequenas, sem caminho claro.</span></figcaption>
-        </figure>
-        <figure>
-          <div class="ad-corpo ad-depois">
-            <p class="bloco-simples">Você quer… pedir um benefício?</p>
-            <p>Usei linguagem simples, fonte grande e um caminho único:</p>
-            <ol><li>Clique no campo com borda amarela</li><li>O Farol dita o próximo passo</li></ol>
-            <span class="acao">Continuar</span>
-          </div>
-          <figcaption><b>Com o Farol</b><span>um bloco por vez, destaque e voz.</span></figcaption>
-        </figure>
+      <div class="compare" data-compare style="--pos:50%">
+        <div class="compare-panel compare-antes">
+          <span class="compare-tag">Portal original</span>
+          <p class="dense">Ao acessar este portal, o usuário declara ter ciência de que os procedimentos estabelecidos no §4 do regulamento específico de serviço dependem de comprovação prévia de conformidade funcional, conforme critérios de gratuidade interministeriais vigentes, sob pena de indeferimento da solicitação.</p>
+          <p class="dense">A ausência de manifestação no prazo regulamentar implicará a preclusão do direito de revisão administrativa, sem prejuízo das sanções previstas no art. 12, incisos II e III, do referido normativo, observadas as disposições transitórias.</p>
+          <p class="dense">Documentos comprobatórios deverão ser apresentados em formato digital, com assinatura eletrônica qualificada, nos termos da legislação aplicável.</p>
+          <span class="compare-tag" style="margin-top:auto;background:#4E5A6B">Texto ilustrativo</span>
+        </div>
+        <div class="compare-panel compare-depois">
+          <span class="compare-tag">Com o Farol</span>
+          <p class="simple-question">Você quer… pedir um benefício?</p>
+          <p class="simple-lead">Usei linguagem simples, fonte grande e um caminho único:</p>
+          <ol class="simple-list">
+            <li><span class="num" aria-hidden="true">1</span>Clique no campo com borda amarela</li>
+            <li><span class="num" aria-hidden="true">2</span>O Farol dita o próximo passo</li>
+          </ol>
+          <span class="simple-action">Continuar</span>
+        </div>
+        <div class="compare-handle" aria-hidden="true"></div>
+        <input class="compare-range" type="range" min="35" max="65" value="50" aria-label="Comparar o portal original com o modo simples do Farol" data-compare-range>
       </div>
+      <p class="compare-hint">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Arraste a linha do feixe — ou use as setas do teclado.</span>
+      </p>
+      <p class="compare-note">Texto do portal original: paráfrase ilustrativa do jargão encontrado nos fluxos. Não é uma página real.</p>
     </div>
   </section>
 
   <!-- PARA QUEM -->
-  <section class="bloco zebra" id="para">
-    <div class="conteudo">
-      <p class="etiqueta">Para quem</p>
-      <h2 class="titulo">Desenhado com quem mais precisa — e com quem está por perto.</h2>
-      <div class="para">
-        <div class="para-item"><span class="selo">60+</span><div><strong>Pessoas idosas</strong><span>Fluxos do Gov.br do dia a dia, sem pressão e sem intermediário.</span></div></div>
-        <div class="para-item"><span class="selo">PcD</span><div><strong>Pessoas com deficiência</strong><span>Voz, destaque e texto simples ao mesmo tempo — não alternativas entre si.</span></div></div>
-        <div class="para-item"><span class="selo">TEA</span><div><strong>Pessoas neurodivergentes</strong><span>Poucos elementos por vez, sem ambiguidade e com linguagem literal.</span></div></div>
-        <div class="para-item"><span class="selo">Família</span><div><strong>E quem acompanha</strong><span>Não precisa mais compartilhar a tela à distância: o suporte ensina, e a pessoa executa.</span></div></div>
+  <section class="section section-para" id="para">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Para quem</p>
+        <h2>Desenhado com quem mais precisa — <em>e com quem está por perto.</em></h2>
       </div>
+      <ul class="audience-list">
+        <li class="audience-item">
+          <span class="audience-tag" aria-hidden="true">60+</span>
+          <div><h3>Pessoas idosas</h3><p>Fluxos do Gov.br do dia a dia, sem pressão e sem intermediário.</p></div>
+        </li>
+        <li class="audience-item">
+          <span class="audience-tag" aria-hidden="true">PcD</span>
+          <div><h3>Pessoas com deficiência</h3><p>Voz, destaque e texto simples ao mesmo tempo — não alternativas entre si.</p></div>
+        </li>
+        <li class="audience-item">
+          <span class="audience-tag" aria-hidden="true">TEA</span>
+          <div><h3>Pessoas neurodivergentes</h3><p>Poucos elementos por vez, sem ambiguidade e com linguagem literal.</p></div>
+        </li>
+        <li class="audience-item">
+          <span class="audience-tag" aria-hidden="true">Família</span>
+          <div><h3>E quem acompanha</h3><p>Não precisa mais compartilhar a tela à distância: o suporte ensina, e a pessoa executa.</p></div>
+        </li>
+      </ul>
+      <p class="audience-note"><b>Se você acompanha alguém, o Farol não tira o seu lugar.</b> Ele devolve a autonomia para quem está aprendendo — e deixa você por perto, não no meio.</p>
     </div>
   </section>
 
   <!-- CTA FINAL -->
-  <section class="final" id="fim">
-    <div class="conteudo">
-      <h2>Acessibilidade não é o computador ler a tela. É a tela entender a pessoa.</h2>
-      <p>Este é o Farol, o assistente do IAssistente Intergeracional — projeto acadêmico submetido ao SBGAMES 2026 (trilha Computação/IA). O código-fonte será aberto, como todo o projeto. Quer acompanhar a implantação?</p>
-      <div class="ctas">
-        <a class="botao primario" href="#telas">Ver as telas do assistente</a>
-        <a class="botao fantasma" href="#topo">Volta ao topo</a>
+  <section class="final on-dark" id="fim">
+    <div class="container final-inner">
+      <p class="eyebrow light">O convite</p>
+      <h2>Acessibilidade não é o computador ler a tela. <em>É a tela entender a pessoa.</em></h2>
+      <p class="lead">Este é o Farol, o assistente do IAssistente Intergeracional — projeto acadêmico submetido ao SBGAMES 2026 (trilha Computação/IA). O código-fonte será aberto, como todo o projeto. Quer acompanhar?</p>
+      <div class="final-actions">
+        <a class="btn btn-primary btn-large" href="#sessao">Rever a demonstração</a>
+        <a class="btn btn-ghost btn-large" href="https://github.com/AsafeTork/farol" target="_blank" rel="noopener">Código no GitHub</a>
       </div>
+      <p class="final-note"><b>Prévia pública.</b> O app é um protótipo acadêmico; as telas ilustram a proposta. A sessão conversacional é evolução pós-MVP.</p>
     </div>
   </section>
 </main>
 
-<footer>
-  <div class="conteudo">
-    <div class="foot-topo">
-      <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0C326F"/><path d="M25.4 20.8 8 16v10z" fill="#FFCD07"/><path d="M38.6 20.8 56 16v10z" fill="#FFCD07"/><rect x="20.5" y="48" width="23" height="5" rx="2.5" fill="#fff"/><rect x="23.5" y="26.3" width="17" height="3.2" rx="1.6" fill="#fff"/><path d="M25 48 27.5 29.5h9L39 48z" fill="#fff"/><circle cx="32" cy="20" r="7" fill="#FFCD07"/></svg>
-      <span><span class="nome">Farol</span><br><span class="sub">assistente de navegação digital · IAssistente Intergeracional</span></span>
+<footer class="site-footer on-dark">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="#topo" aria-label="Farol, ir ao topo">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0C326F"/><path d="M25.4 20.8 8 16v10z" fill="#FFCD07"/><path d="M38.6 20.8 56 16v10z" fill="#FFCD07"/><rect x="20.5" y="48" width="23" height="5" rx="2.5" fill="#fff"/><rect x="23.5" y="26.3" width="17" height="3.2" rx="1.6" fill="#fff"/><path d="M25 48 27.5 29.5h9L39 48z" fill="#fff"/><circle cx="32" cy="20" r="7" fill="#FFCD07"/></svg>
+        <span class="brand-text"><span class="brand-name">Farol</span><span class="brand-sub">assistente de navegação digital</span></span>
+      </a>
+      <p>Um feixe de cada vez. O Farol guia idosos, PcD e pessoas neurodivergentes pelos fluxos essenciais do Gov.br — sem fazer por elas.</p>
     </div>
-    <div>Projeto acadêmico: <strong>IAssistente Intergeracional (Tutoria Reversa)</strong> — Asafe Almeida Tork, Marcos Vinicios, Jefenson Dultra. Instituto Federal do Pará, Campus Bragança.</div>
-    <div>Referências do paper: WCAG 2.1 (W3C) · WCGE/SBC 2024 · IHC/SBC 2025 · CTRLE 2025 · WICS 2022 · IEEE 2024.</div>
-    <div>Referências de design: redesign do Gemini Live (9to5Google, 19/04/2026) · GPT-Live (OpenAI, 08/07/2026) — acessados 23/10/2026, re-verificados ao vivo em 25/10/2026.</div>
-    <div>Landing derivada do paper; sem dados reais de pesquisa, sem estatística inventada. Identidade <strong>Farol</strong>: paleta e tokens extraídos do Design System gov.br v3.7.0; fontes Archivo (OFL) e Atkinson Hyperlegible (OFL).</div>
+    <div class="footer-col">
+      <h3>Projeto</h3>
+      <p><strong>IAssistente Intergeracional (Tutoria Reversa)</strong><br>Asafe Almeida Tork · Marcos Vinicios · Jefenson Dultra</p>
+      <p>IFPA Campus Bragança · SBGAMES 2026 (Computação/IA)</p>
+    </div>
+    <div class="footer-col">
+      <h3>Referências</h3>
+      <p><strong>Paper:</strong> WCAG 2.1 (W3C) · WCGE/SBC 2024 · IHC/SBC 2025 · CTRLE 2025 · WICS 2022 · IEEE 2024.</p>
+      <p><strong>Design:</strong> Gemini Live (9to5Google, 19/04/2026) · GPT-Live (OpenAI, 08/07/2026) · gov.br DS v3.7.0. Acessos em 23/10/2026; re-verificação ao vivo em 25/10/2026.</p>
+    </div>
+    <div class="footer-col">
+      <h3>Acessibilidade</h3>
+      <details>
+        <summary>O que esta página promete</summary>
+        <ul>
+          <li>Contraste AA calculado nos pares de texto</li>
+          <li>Foco visível em todos os controles</li>
+          <li>Movimento pausável e respeito a prefers-reduced-motion</li>
+          <li>Duas famílias tipográficas; escala de 8pt</li>
+          <li>Estados nunca comunicados só por cor</li>
+        </ul>
+      </details>
+      <p style="margin-top:16px">Fontes Archivo e Atkinson Hyperlegible (OFL). Identidade Farol derivada do Design System gov.br v3.7.0.</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Farol · projeto acadêmico de código aberto</span>
+    <a href="#topo">Voltar ao topo ↑</a>
   </div>
 </footer>
 
+<script src="assets/farol.js" defer></script>
 </body>
 </html>
