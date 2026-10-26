@@ -129,44 +129,6 @@
     }
   }
 
-  /* ---------- estrelas ---------- */
-  const starCanvas = $('[data-stars]');
-  if (starCanvas && starCanvas.getContext) {
-    const draw = () => {
-      const rect = starCanvas.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      starCanvas.width = Math.round(rect.width * dpr);
-      starCanvas.height = Math.round(rect.height * dpr);
-      const ctx = starCanvas.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, rect.width, rect.height);
-      let seed = 73;
-      const random = () => {
-        seed = (seed * 1664525 + 1013904223) % 4294967296;
-        return seed / 4294967296;
-      };
-      for (let i = 0; i < 88; i += 1) {
-        const x = random() * rect.width;
-        const y = random() * rect.height * 0.72;
-        const radius = random() * 1.15 + 0.35;
-        ctx.globalAlpha = random() * 0.55 + 0.18;
-        ctx.fillStyle = random() > 0.9 ? '#FFCD07' : '#DCE6F7';
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-    };
-    let starTimer = 0;
-    const redraw = () => {
-      window.clearTimeout(starTimer);
-      starTimer = window.setTimeout(draw, 120);
-    };
-    draw();
-    window.addEventListener('resize', redraw, { passive: true });
-  }
-
   /* ---------- inclinação 3D ---------- */
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
   if (finePointer.matches) {
@@ -212,6 +174,7 @@
     const liveLine = $$('[data-live-line]', session);
     const playButton = $('[data-session-play]', session);
     const playLabel = $('[data-play-label]', session);
+    const vivoStage = $('[data-vivo-stage]', session);
 
     const states = {
       ocioso: {
@@ -261,6 +224,7 @@
         if (selected && moveFocus) tab.focus();
       });
       if (phone) phone.setAttribute('data-estado', name);
+      if (vivoStage) vivoStage.setAttribute('data-state', name);
       if (panel) {
         const active = tabs.find((tab) => tab.getAttribute('data-state') === name);
         if (active) panel.setAttribute('aria-labelledby', active.id);

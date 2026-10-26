@@ -73,13 +73,8 @@
     <div class="container hero-grid">
       <div class="hero-copy">
         <p class="eyebrow light">IAssistente Intergeracional · SBGAMES 2026</p>
-        <h1>A internet do Gov.br, explicada <em>como se fosse a primeira vez</em>.</h1>
+        <h1>A internet do Gov.br, explicada <em>como se fosse a primeira vez</em><span class="h1-dot">.</span></h1>
         <p class="hero-lead">O <strong>Farol</strong> acende o campo certo, dita o passo em voz alta e espera o seu tempo. Você digita, você decide, você aprende.</p>
-        <ul class="trust-list">
-          <li>Você executa; ele só ensina</li>
-          <li>Seus dados ficam no aparelho</li>
-          <li>Código aberto</li>
-        </ul>
         <div class="hero-actions">
           <a class="btn btn-primary btn-large" href="#sessao">
             Acender o Farol
@@ -87,46 +82,16 @@
           </a>
           <a class="btn btn-ghost btn-large" href="#tutoria">O que é tutoria reversa?</a>
         </div>
+        <ul class="trust-list">
+          <li>Você executa; ele só ensina</li>
+          <li>Seus dados ficam no aparelho</li>
+          <li>Código aberto</li>
+        </ul>
         <p class="hero-note"><b>Prévia pública.</b> O app é um protótipo acadêmico; nada aqui faz por você.</p>
       </div>
 
       <div class="hero-visual">
         <div class="hero-scene" aria-hidden="true">
-          <canvas class="hero-stars" data-stars></canvas>
-          <div class="hero-horizon"></div>
-          <div class="hero-sea"></div>
-
-          <div class="lighthouse">
-            <span class="lh-glow"></span>
-            <span class="lh-rock"></span>
-            <div class="lh-tower">
-              <span class="lh-veil"></span>
-              <span class="lh-struts"></span>
-              <span class="lh-ring" style="--y:0px;--r:104px"></span>
-              <span class="lh-ring" style="--y:20px;--r:99px"></span>
-              <span class="lh-ring" style="--y:40px;--r:94px"></span>
-              <span class="lh-ring" style="--y:60px;--r:89px"></span>
-              <span class="lh-ring" style="--y:80px;--r:84px"></span>
-              <span class="lh-ring" style="--y:100px;--r:79px"></span>
-              <span class="lh-ring" style="--y:120px;--r:74px"></span>
-              <span class="lh-ring" style="--y:140px;--r:69px"></span>
-              <span class="lh-ring" style="--y:160px;--r:64px"></span>
-              <span class="lh-ring" style="--y:180px;--r:59px"></span>
-              <span class="lh-ring" style="--y:200px;--r:54px"></span>
-              <span class="lh-ring" style="--y:220px;--r:50px"></span>
-              <span class="lh-ring" style="--y:240px;--r:46px"></span>
-              <span class="lh-ring" style="--y:260px;--r:42px"></span>
-            </div>
-            <span class="lh-gallery"></span>
-            <span class="lh-roof"></span>
-            <span class="lh-mast"></span>
-            <div class="lh-lantern">
-              <span class="lh-glass"></span>
-              <span class="lh-core"></span>
-              <span class="lh-rotor"><span class="lh-beam"></span><span class="lh-beam b"></span></span>
-            </div>
-          </div>
-
           <div class="scene-phone-wrap">
             <div class="device" data-tilt>
               <span class="device-camera"></span>
@@ -159,23 +124,25 @@
                   <div class="screen-note">gov.br · conta única · SERPRO</div>
                   <div class="screen-bottom">
                     <div class="voice-bubble">
-                      <span class="voice-avatar" aria-hidden="true">
-                        <svg width="13" height="13" viewBox="0 0 24 24"><path d="M9.5 7.8 3 6v3.8z" fill="#FFCD07"/><path d="M14.5 7.8 21 6v3.8z" fill="#FFCD07"/><rect x="8.8" y="9.9" width="6.4" height="1.2" rx="0.6" fill="#fff"/><path d="M9.4 18 10.3 11.1h3.4L14.6 18z" fill="#fff"/><rect x="7.7" y="18" width="8.6" height="2" rx="1" fill="#fff"/><circle cx="12" cy="7.5" r="2.6" fill="#FFCD07"/></svg>
-                      </span>
                       <p>Este é o campo do <b>CPF</b>. É o mesmo número da sua carteira. Pode digitar; eu vigio o resto da tela.</p>
                     </div>
-                    <div class="action-chips"><span>Repetir voz</span><span>Explicar diferente</span><span>Erro?</span></div>
-                    <div class="narration"><span class="dot"></span>o Farol está narrando</div>
-                    <div class="step-dots">PASSO 2 DE 5 <i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                    <div class="vivo vivo--compact" data-vivo data-state="falando">
+                      <span class="vivo-beacon" aria-hidden="true"><span class="vivo-sweep"></span><span class="vivo-lens"></span></span>
+                      <span class="vivo-wave" aria-hidden="true"></span>
+                      <span class="vivo-btn vivo-mic" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="#FFCD07"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="#FFCD07" stroke-width="2" stroke-linecap="round"/></svg></span>
+                      <span class="vivo-btn vivo-end" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 14c4-4 12-4 16 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/></svg></span>
+                    </div>
                   </div>
                 </div>
                 <div class="nav-pill"><span></span></div>
               </div>
+              <span class="device-light"></span>
             </div>
           </div>
+
         </div>
         <div class="hero-scene-bar">
-          <p class="scene-caption"><b>Cena ilustrativa.</b> O feixe encontra o campo do CPF; a voz explica; quem digita é você.</p>
+          <p class="scene-caption"><b>Prévia do app.</b> A voz explica o campo do CPF; quem digita é você.</p>
         </div>
       </div>
     </div>
@@ -301,7 +268,7 @@
 
         <div class="telas-grid">
           <figure class="tela-card" data-tilt>
-            <div class="device" role="img" aria-label="Tela (a): login do gov.br com o campo do CPF destacado por uma borda amarela, um balão de voz do Farol e as ações Repetir voz, Explicar diferente e Erro. Passo 2 de 5.">
+            <div class="device" role="img" aria-label="Tela (a): login do gov.br com o campo do CPF destacado por uma borda amarela, um balão de voz do Farol. Passo 2 de 5.">
               <span class="device-camera"></span>
               <div class="device-screen">
                 <div class="screen-status"><span>14:32</span><span class="dir"><span>78%</span></span></div>
@@ -317,12 +284,8 @@
                   <p class="screen-note">próximo passo · digitar a senha</p>
                   <div class="screen-bottom">
                     <div class="voice-bubble">
-                      <span class="voice-avatar" aria-hidden="true">
-                        <svg width="13" height="13" viewBox="0 0 24 24"><path d="M9.5 7.8 3 6v3.8z" fill="#FFCD07"/><path d="M14.5 7.8 21 6v3.8z" fill="#FFCD07"/><rect x="8.8" y="9.9" width="6.4" height="1.2" rx="0.6" fill="#fff"/><path d="M9.4 18 10.3 11.1h3.4L14.6 18z" fill="#fff"/><rect x="7.7" y="18" width="8.6" height="2" rx="1" fill="#fff"/><circle cx="12" cy="7.5" r="2.6" fill="#FFCD07"/></svg>
-                      </span>
                       <p>Digite o número do seu <b>CPF</b> no campo com a borda amarela.</p>
                     </div>
-                    <div class="action-chips"><span>Repetir voz</span><span>Explicar diferente</span><span>Erro?</span></div>
                     <div class="step-dots">PASSO 2 DE 5 <i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
                   </div>
                 </div>
@@ -524,7 +487,7 @@
             <div class="live-body">
               <div class="live-portal">
                 <p class="screen-title">Acesse sua conta</p>
-                <div class="field-wrap" style="position:relative;margin-bottom:24px">
+                <div class="field-wrap" style="position:relative;margin-bottom:40px">
                   <label class="field-label">Digite seu CPF</label>
                   <div class="field"><span>000.000.000-00</span><span class="ring"></span></div>
                   <span class="live-marker"><span class="pt"></span>aqui — o campo com a borda amarela</span>
@@ -534,11 +497,11 @@
               </div>
               <div class="live-overlay">
                 <p class="live-transcript"><span class="who" data-live-who>Você</span><span data-live-line>“Não sei onde digitar meu CPF.”</span></p>
-                <div class="live-pill">
-                  <span class="live-beacon" aria-hidden="true"><span class="live-feixe"></span><span class="live-core"></span></span>
-                  <span class="live-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                  <span class="live-mic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="#FFCD07"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="#FFCD07" stroke-width="2" stroke-linecap="round"/></svg></span>
-                  <span class="live-end" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14c4-4 12-4 16 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/></svg></span>
+                <div class="vivo vivo--stage" data-vivo data-vivo-stage data-state="ouvindo">
+                  <span class="vivo-beacon" aria-hidden="true"><span class="vivo-sweep"></span><span class="vivo-lens"></span></span>
+                  <span class="vivo-wave" aria-hidden="true"></span>
+                  <span class="vivo-btn vivo-mic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="#FFCD07"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="#FFCD07" stroke-width="2" stroke-linecap="round"/></svg></span>
+                  <span class="vivo-btn vivo-end" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 14c4-4 12-4 16 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/><rect x="17" y="14.5" width="4" height="6" rx="1.6" fill="#fff"/></svg></span>
                 </div>
               </div>
             </div>
