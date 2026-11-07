@@ -44,6 +44,47 @@ Este é o registro normativo de decisões do projeto. Uma decisão nova deve inc
 **Decisão:** agentes trabalham por função, com escopo explícito e artefato verificável; o agente principal integra, valida e decide a publicação.  
 **Impacto:** nenhum agente publica diretamente nem considera sua própria saída como evidência final.
 
+## D-008 — Contrato disponível e primeiro adaptador
+
+**Data:** 2026-11-06
+**Status:** vigente para esta implementação
+**Contexto:** o repositório contém o padrão e o plano, mas não contém a especificação funcional, o handoff ou o paper. O histórico não recuperou essas fontes; T1–T5 não estão definidos.
+**Decisão:** implementar os requisitos comprovados pelo contrato explícito `contrato-mvp-provisorio.md`, com extensão Chromium e página de prática. Não atribuir a implementação aos T1–T5 nem declarar conformidade com documentos ausentes.
+**Impacto:** o adaptador de navegador embutido e a validação acadêmica ficam pendentes. Revisão de integração pelo agente principal.
+**Evidência:** inventário do commit base `b307be7`; contrato e testes do MVP.
+
+## D-009 — Roteiros seguros e custo zero
+
+**Data:** 2026-11-06
+**Status:** vigente
+**Contexto:** não há provedor de IA configurado ou contrato de modelo verificável.
+**Decisão:** roteiros por regras locais e templates conhecidos; backend opcional com os mesmos contratos. Só enums e IDs efêmeros podem sair do aparelho, após consentimento explícito da sessão. Não enviar rótulos brutos, conteúdo, URL ou valores.
+**Impacto:** a versão não pesquisa nem aprende novos fluxos autonomamente. Cache reutiliza estruturas e preferências; não armazena progresso de autenticação, histórico de páginas ou dados digitados. A adaptação de linguagem é controlada pela pessoa.
+**Evidência:** `src/core/`, `server/`, testes de privacidade e consentimento.
+
+## D-010 — Publicação por lista explícita
+
+**Data:** 2026-11-06
+**Status:** substitui o trecho de D-001 sobre a localização do diretório Git
+**Contexto:** o Git atual contém site e documentação na raiz. Publicar a raiz exporia documentos internos.
+**Decisão:** manter um repositório; gerar `paginas-farol/` com lista explícita somente de landing, demonstrações e assets públicos. Backend, documentação e testes ficam fora.
+**Impacto:** um workflow de Pages deve publicar exclusivamente esse artefato; ativação de hospedagem depende da configuração do repositório. Entrega em branch e PR preserva a revisão antes do deploy.
+**Evidência:** `scripts/build.mjs`, teste da distribuição e workflow Pages manual.
+
+## D-011 — APK de prática para avaliação
+
+**Data:** 2026-11-06
+
+**Status:** vigente para esta implementação
+
+**Contexto:** é necessário avaliar o protótipo em Android usando ADB, enquanto a navegação em portais reais e a especificação funcional completa continuam pendentes.
+
+**Decisão:** empacotar uma atividade offline em WebView com recursos locais e uma ponte restrita ao TTS local. O aplicativo não solicita internet ou microfone, e a pessoa executa as ações. O pacote de teste usa assinatura de depuração.
+
+**Impacto:** este APK não integra Gov.br, não é uma versão de loja e não comprova por si só acessibilidade, privacidade ou atendimento a T1–T5. Build, assinatura e execução em dispositivo exigem ferramentas e evidências próprias.
+
+**Evidência:** `android/`, `android/tests/voice-adapter.test.mjs`, `docs/testes-android-adb.md` e `.github/workflows/android-apk.yml`.
+
 ## Modelo para novas decisões
 
 ```md

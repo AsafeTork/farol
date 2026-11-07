@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" data-farol-practice>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Experimente a orientação por voz, texto e destaque do Farol em uma atividade local, com dados fictícios.">
+  <title>Praticar com o Farol</title>
+  <link rel="icon" href="assets/farol-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/pratica.css">
+  <script type="module" src="assets/pratica.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#atividade">Pular para a atividade</a>
+  <header class="topbar" data-farol-ignore>
+    <a class="brand" href="index.html"><img src="assets/farol-icon.svg" width="40" height="40" alt=""><span>farol<span class="brand-sub">IAssistente Intergeracional</span></span></a>
+    <span class="local-badge"><span aria-hidden="true">●</span> Prática no seu aparelho</span>
+  </header>
+  <main class="layout">
+    <section class="intro" aria-labelledby="titulo">
+      <p class="eyebrow">SEU TEMPO. SEU CAMINHO.</p>
+      <h1 id="titulo">Um passo<br>de cada <em>vez.</em></h1>
+      <p class="lead">O Farol explica e mostra onde agir.<br>Você faz cada escolha, com calma.</p>
+      <div class="start-card" data-farol-ignore>
+        <span class="card-icon" aria-hidden="true">✦</span>
+        <h2>Vamos praticar?</h2>
+        <p>Preencha uma solicitação fictícia. O guia acompanha você com texto, destaque e voz.</p>
+        <button class="primary" type="button" id="start-guide">Começar orientação <span aria-hidden="true">→</span></button>
+        <p class="small" id="guide-status" role="status">Sem cadastro. Sem microfone.</p>
+      </div>
+      <ol class="principles">
+        <li><span>01</span><div><strong>Você mantém o controle</strong><p>O Farol não clica nem preenche por você.</p></div></li>
+        <li><span>02</span><div><strong>Pode perguntar de novo</strong><p>Repita a voz ou releia a explicação.</p></div></li>
+        <li><span>03</span><div><strong>Pare quando quiser</strong><p>Pause, volte um passo ou encerre o guia.</p></div></li>
+      </ol>
+      <p class="project-note">Projeto Farol · IFPA Bragança<br>Tutoria reversa para navegar com autonomia.</p>
+    </section>
+    <section class="workspace" id="atividade" aria-labelledby="atividade-titulo">
+      <div class="workspace-top"><span class="practice-tag">AMBIENTE DE PRÁTICA</span><span class="step-count" id="stage-count">1 de 2</span></div>
+      <div class="practice-notice"><span aria-hidden="true">ⓘ</span><p>Esta é uma simulação. Use os exemplos abaixo. Nada é enviado a um serviço público.</p></div>
+      <div id="exercise">
+        <p class="eyebrow blue">SUA PRIMEIRA ATIVIDADE</p>
+        <h2 id="atividade-titulo" tabindex="-1">Criar uma solicitação</h2>
+        <p class="description">Vamos preencher três campos e conferir a solicitação.</p>
+        <form id="practice-form" novalidate>
+          <div class="field"><label for="practice-name">Nome <span>(obrigatório)</span></label><input id="practice-name" name="nome" type="text" required autocomplete="off" aria-describedby="name-hint"><p class="hint" id="name-hint">Use: Pessoa de exemplo</p></div>
+          <div class="field"><label for="practice-email">E-mail <span>(obrigatório)</span></label><input id="practice-email" name="email" type="email" required autocomplete="off" aria-describedby="email-hint"><p class="hint" id="email-hint">Use: pessoa@exemplo.invalid</p></div>
+          <div class="field"><label for="practice-subject">Assunto <span>(obrigatório)</span></label><select id="practice-subject" required aria-describedby="subject-hint"><option value="">Escolha um assunto</option><option value="info">Pedir uma informação</option><option value="access">Conhecer os serviços</option></select><p class="hint" id="subject-hint">Escolha uma das duas opções para praticar.</p></div>
+          <p class="form-error" id="form-error" role="alert" hidden></p>
+          <button class="primary continue" type="submit">Continuar <span aria-hidden="true">→</span></button>
+        </form>
+      </div>
+      <div class="workspace-footer"><span aria-hidden="true">◇</span> Seus campos ficam apenas nesta página e são apagados ao recarregar.</div>
+    </section>
+  </main>
+  <footer class="page-footer" data-farol-ignore><a href="index.html">Conhecer o projeto</a><span>MVP local · Sessão Viva é uma evolução futura</span><button type="button" id="reset-practice">Recomeçar atividade</button></footer>
+  <noscript><p class="noscript">Ative o JavaScript para usar o guia nesta atividade. Você ainda pode ler as instruções e os rótulos dos campos.</p></noscript>
+</body>
+</html>

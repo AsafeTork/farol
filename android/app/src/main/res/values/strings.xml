@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Farol — Prática</string>
+    <string name="load_error">Não foi possível abrir a atividade do Farol.</string>
+</resources>

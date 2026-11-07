@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Farol — a internet do Gov.br, explicada como se fosse a primeira vez</title>
-<meta name="description" content="Farol é o assistente de navegação digital do IAssistente Intergeracional: tutoria reversa com IA para idosos, PcD e pessoas neurodivergentes nos fluxos do Gov.br. O feixe aponta o campo, a voz explica o passo — e quem executa é você. Projeto de código aberto — SBGAMES 2026, IFPA Bragança.">
+<meta name="description" content="Farol é um protótipo de orientação digital do IAssistente Intergeracional. O guia destaca campos, explica os passos e oferece voz. Você decide e executa cada ação.">
 <meta name="theme-color" content="#04183F">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Farol — a internet do Gov.br, explicada como se fosse a primeira vez">
@@ -76,8 +76,8 @@
         <h1>A internet do Gov.br, explicada <em>como se fosse a primeira vez</em><span class="h1-dot">.</span></h1>
         <p class="hero-lead">O <strong>Farol</strong> acende o campo certo, dita o passo em voz alta e espera o seu tempo. Você digita, você decide, você aprende.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary btn-large" href="#sessao">
-            Acender o Farol
+          <a class="btn btn-primary btn-large" href="pratica.html">
+            Experimentar o Farol
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <a class="btn btn-ghost btn-large" href="#tutoria">O que é tutoria reversa?</a>
@@ -85,7 +85,7 @@
         <ul class="trust-list">
           <li>Você executa; ele só ensina</li>
           <li>Seus dados ficam no aparelho</li>
-          <li>Código aberto</li>
+          <li>Sem cadastro na prática</li>
         </ul>
         <p class="hero-note"><b>Prévia pública.</b> O app é um protótipo acadêmico; nada aqui faz por você.</p>
       </div>
@@ -219,7 +219,7 @@
         <h2>O assistente ensina. <em>Você executa.</em></h2>
         <div class="definition">
           <p>Na tutoria tradicional, o tutor humano faz por você — e você aprende pouco. Na <strong>tutoria reversa</strong>, quem ensina é a máquina, e quem executa, decide e aprende é a pessoa. O resultado não é uma tarefa concluída: <em>é autonomia mantida</em>.</p>
-          <p>Nos sistemas que você mais usa, o Farol guarda um “roteiro” próprio (uma <em>skill</em>), que evolui a cada sessão — orientação mais precisa e mais leve. E ele pesquisa sozinho o que precisar aprender. O Gov.br é o primeiro; qualquer outra tela pode entrar na lista.</p>
+          <p>O Farol usa roteiros de orientação (<em>skills</em>) para ajudar com formulários, acesso e buscas. Nesta versão inicial, os roteiros seguem regras locais e podem ser reutilizados; a pessoa escolhe o nível de explicação.</p>
         </div>
         <ul class="principle-list">
           <li><strong>Voz</strong><span>cada passo dito em voz alta, no ritmo de quem ouve.</span></li>
@@ -300,7 +300,7 @@
           </figure>
 
           <figure class="tela-card" data-tilt>
-            <div class="device" role="img" aria-label="Tela (b): o portal gov.br mostra um erro técnico vermelho; o Farol traduz para linguagem simples e oferece as ações Liberar acesso aqui e Voltar, com a frase você decide.">
+            <div class="device" role="img" aria-label="Tela (b), exemplo fictício: o portal mostra um erro e o Farol sugere consultar as orientações oficiais. A pessoa decide se quer voltar ou continuar.">
               <span class="device-camera"></span>
               <div class="device-screen">
                 <div class="screen-status"><span>14:32</span><span class="dir"><span>78%</span></span></div>
@@ -308,15 +308,15 @@
                 <div class="screen-body">
                   <p class="screen-title">Entrar com gov.br</p>
                   <div class="field"><span>000.000.000-00</span></div>
-                  <p class="error-tech">ERRO 422: cpf_already_linked</p>
+                  <p class="error-tech">ERRO: exemplo fictício</p>
                   <p class="screen-note">posso ler em voz alta para você</p>
                   <div class="translation">
                     <div class="head">
                       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="#1351B4"/><path d="M16 8a5 5 0 0 1 0 8" stroke="#1351B4" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
                       O Farol traduziu o erro:
                     </div>
-                    <p>Este CPF já tem uma conta ativa em outro aparelho. O gov.br permite um aparelho por vez — podemos liberar o acesso aqui.</p>
-                    <div class="action-chips" style="padding-left:0;margin-top:8px"><span>Liberar acesso aqui</span><span>Voltar</span></div>
+                    <p>Exemplo fictício: confira as instruções do serviço e procure os canais oficiais se precisar de ajuda.</p>
+                    <div class="action-chips" style="padding-left:0;margin-top:8px"><span>Ver orientações</span><span>Voltar</span></div>
                   </div>
                   <p class="agency-note">você decide; o Farol só explica</p>
                 </div>
@@ -372,7 +372,7 @@
       <div class="como-head">
         <p class="eyebrow">Como funciona</p>
         <h2>Cinco ciclos. <em>Uma tela de cada vez.</em></h2>
-        <p class="lead">A cada tela do portal, o Farol repete o mesmo ciclo — do que ele “enxerga” até o que ele aprende com você.</p>
+        <p class="lead">Em cada tela, o Farol prepara orientações para você seguir no seu ritmo.</p>
 
         <div class="privacy-card">
           <p class="kicker">
@@ -387,12 +387,12 @@
             </div>
             <div class="privacy-filter">filtro local</div>
             <div class="privacy-side">
-              <span class="tag">viaja</span>
+              <span class="tag">opcional</span>
               <strong>a estrutura da tela</strong>
-              <span>rótulos · hierarquia · estado</span>
+              <span>tipos e rótulos padronizados</span>
             </div>
           </div>
-          <p>Só a <code>estrutura da página</code> — sem seus dados digitados — vai para a nuvem, sob a LGPD: consentimento, minimização e retenção mínima. O app roda sem a API restrita de acessibilidade do Android.</p>
+          <p>Por padrão, a orientação acontece no próprio navegador. O serviço local opcional recebe somente tipos de campos e rótulos padronizados, depois da sua autorização. Os dados digitados não são enviados.</p>
         </div>
       </div>
 
@@ -403,7 +403,7 @@
             <div>
               <span class="rot">Captura</span>
               <h3>Ele enxerga a tela</h3>
-              <p>No navegador embutido no app, a cada mudança relevante o Farol faz um retrato estruturado: árvore de acessibilidade, rótulos dos campos e o estado visível (foco, erros, avisos).</p>
+              <p>Ao iniciar, o Farol identifica campos e controles visíveis da página. Se a página mudar, você pode atualizar a orientação.</p>
             </div>
           </li>
           <li class="cycle" data-reveal style="--delay:80ms">
@@ -411,15 +411,15 @@
             <div>
               <span class="rot">Saneamento</span>
               <h3>Seus dados ficam no aparelho</h3>
-              <p>Um filtro de privacidade local apaga valores digitados, senhas e máscaras de documento. Só papéis, rótulos e hierarquia seguem viagem.</p>
+              <p>O guia monta uma lista com tipos de campos e rótulos padronizados sem copiar os valores que você digitou, senhas, endereço do site ou texto livre.</p>
             </div>
           </li>
           <li class="cycle" data-reveal style="--delay:160ms">
             <span class="cycle-num" aria-hidden="true">3</span>
             <div>
               <span class="rot">Decisão de roteiro</span>
-              <h3>Cache ou nuvem</h3>
-              <p>Fluxo já conhecido? A skill em cache responde na hora, sem internet. Fluxo novo? A estrutura saneada vai ao modelo de IA, que monta e valida um plano de orientação.</p>
+              <h3>Roteiros locais</h3>
+              <p>O Farol cria um roteiro com regras locais e pode reutilizá-lo. Um serviço no próprio aparelho é opcional; esta versão não usa modelo de IA.</p>
             </div>
           </li>
           <li class="cycle" data-reveal style="--delay:240ms">
@@ -427,19 +427,19 @@
             <div>
               <span class="rot">Orientação multimodal</span>
               <h3>Destaque + voz + texto</h3>
-              <p>A borda amarela aponta o alvo, a voz dita a instrução simples e o Farol espera você executar — confirmando o sucesso, reformulando o passo ou traduzindo o erro.</p>
+              <p>A borda amarela aponta o alvo, o texto explica a etapa e a voz pode ler a instrução. Você escolhe quando avançar e pode pedir explicações para avisos comuns.</p>
             </div>
           </li>
           <li class="cycle" data-reveal style="--delay:320ms">
             <span class="cycle-num" aria-hidden="true">5</span>
             <div>
-              <span class="rot">Aprendizado</span>
-              <h3>O suporte vai afinando</h3>
-              <p>Ao concluir, os acertos e travamentos alimentam a skill e o cache. Conforme você domina o fluxo, as instruções ficam mais leves — a autonomia vem primeiro.</p>
+              <span class="rot">Preferências</span>
+              <h3>No seu ritmo</h3>
+              <p>Você pode ajustar a voz, o tamanho do texto e a quantidade de explicação. Preferências e roteiros podem ser apagados quando quiser.</p>
             </div>
           </li>
         </ol>
-        <p class="source como-source"><b>Ciclos C1–C5 e salvaguardas de privacidade</b> conforme a Metodologia do paper (RNF01 · RNF02 — LGPD).</p>
+        <p class="source como-source">A implementação é um protótipo de pesquisa. Os ciclos completos e a validação com o público seguem em desenvolvimento.</p>
       </div>
     </div>
   </section>
@@ -585,10 +585,10 @@
     <div class="container final-inner">
       <p class="eyebrow light">O convite</p>
       <h2>Acessibilidade não é o computador ler a tela. <em>É a tela entender a pessoa.</em></h2>
-      <p class="lead">Este é o Farol, o assistente do IAssistente Intergeracional — projeto acadêmico submetido ao SBGAMES 2026 (trilha Computação/IA). O código-fonte será aberto, como todo o projeto. Quer acompanhar?</p>
+      <p class="lead">Este é o Farol, o assistente do IAssistente Intergeracional — um projeto acadêmico do IFPA Bragança. Experimente a atividade e acompanhe sua evolução.</p>
       <div class="final-actions">
-        <a class="btn btn-primary btn-large" href="#sessao">Rever a demonstração</a>
-        <a class="btn btn-ghost btn-large" href="https://github.com/AsafeTork/farol" target="_blank" rel="noopener">Código no GitHub</a>
+        <a class="btn btn-primary btn-large" href="pratica.html">Experimentar a atividade</a>
+        <a class="btn btn-ghost btn-large" href="farol-sessao-viva.html">Ver o conceito da Sessão Viva</a>
       </div>
       <p class="final-note"><b>Prévia pública.</b> O app é um protótipo acadêmico; as telas ilustram a proposta. A sessão conversacional é evolução pós-MVP.</p>
     </div>
@@ -630,7 +630,7 @@
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© 2026 Farol · projeto acadêmico de código aberto</span>
+    <span>© 2026 Farol · projeto acadêmico</span>
     <a href="#topo">Voltar ao topo ↑</a>
   </div>
 </footer>

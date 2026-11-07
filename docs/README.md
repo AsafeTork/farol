@@ -10,6 +10,8 @@ Este diretório contém a documentação interna do Projeto Farol. Nenhum arquiv
 4. [`especificacao-funcional-iassistente.md`](especificacao-funcional-iassistente.md) — contrato funcional e técnico do MVP.
 5. [`handoff-implementacao-farol.md`](handoff-implementacao-farol.md) — tokens, componentes e Sessão Viva.
 
+A especificação e o handoff citados nos itens 4 e 5, assim como o paper, não foram encontrados neste repositório. As escolhas de engenharia adotadas enquanto faltam estão em [`contrato-mvp-provisorio.md`](contrato-mvp-provisorio.md); o que foi implementado e o que ainda precisa ser verificado está em [`estado-mvp.md`](estado-mvp.md).
+
 ## Hierarquia de autoridade
 
 - O paper define a proposta acadêmica e os requisitos que não podem ser contraditos.
