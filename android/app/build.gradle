@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.asafetork.farol'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'io.github.asafetork.farol'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures { buildConfig true }
+    sourceSets.main.assets.srcDir(layout.buildDirectory.dir('generated/farolAssets'))
+}
+
+// Copy only the public files required for the offline exercise. Their source
+// remains shared with the browser prototype; no internal docs enter the APK.
+def generatedAssets = layout.buildDirectory.dir('generated/farolAssets/www')
+tasks.register('prepareFarolAssets', Sync) {
+    from(rootProject.projectDir.parentFile) {
+        include 'index.html', 'farol-sessao-viva.html', 'pratica.html'
+        include 'assets/farol.css', 'assets/farol.js', 'assets/farol-icon.svg'
+        include 'assets/pratica.css', 'assets/pratica.mjs'
+        include 'src/core/privacy.mjs', 'src/core/planner.mjs'
+        include 'src/ui/assistant.mjs', 'src/ui/styles.mjs'
+        filesMatching('pratica.html') {
+            filter { line -> line.replace(
+                '<script type="module" src="assets/pratica.mjs"></script>',
+                '<script src="android-tts.js"></script> <script type="module" src="assets/pratica.mjs"></script>'
+            ) }
+        }
+    }
+    from('src/main/web') { include 'android-tts.js' }
+    into generatedAssets
+}
+tasks.named('preBuild').configure { dependsOn tasks.named('prepareFarolAssets') }

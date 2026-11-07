@@ -21,6 +21,18 @@ Abra o endereço mostrado no terminal, normalmente `http://127.0.0.1:4173/pratic
 
 A extensão só é acionada na aba escolhida. Páginas internas do navegador, alguns serviços protegidos, componentes personalizados e formulários em outros quadros podem não ser orientados. Revise o destino antes de digitar informações pessoais; o Farol não é um serviço oficial do Gov.br e não confirma o resultado de uma operação.
 
+## Android e testes via ADB
+
+O projeto inclui uma versão Android de **prática offline** em `android/`. Ela não navega por portais reais; o objetivo desta versão é permitir avaliação do guia em um dispositivo. Para gerar o APK de teste é necessário JDK 17, Gradle 8.9 e Android SDK com plataforma e build-tools 35.0.0:
+
+```sh
+gradle -p android :app:assembleDebug
+```
+
+O APK gerado fica em `android/app/build/outputs/apk/debug/app-debug.apk` e usa assinatura de depuração. Os procedimentos para uma pessoa ou IA instalar, testar e registrar evidências estão em [docs/testes-android-adb.md](docs/testes-android-adb.md).
+
+O workflow `Android - APK de testes` prepara um artefato com APK, SHA-256 e roteiro; quando executado por uma tag `android-v*`, tenta criar uma pré-release com esses arquivos. Ele depende do GitHub Actions estar operacional e de as etapas de build terminarem com sucesso. Este repositório é privado: o download de uma release exige acesso ao repositório.
+
 ## Privacidade e funcionamento
 
 O planejamento padrão acontece no navegador por regras e textos locais. Valores digitados, credenciais, endereços das páginas e rótulos brutos não entram na estrutura transferível. O cache contém apenas estruturas padronizadas e roteiros; as preferências e o cache podem ser apagados no painel. O MVP não usa microfone e não automatiza cliques, preenchimentos ou decisões.

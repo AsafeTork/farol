@@ -71,6 +71,20 @@ Este é o registro normativo de decisões do projeto. Uma decisão nova deve inc
 **Impacto:** um workflow de Pages deve publicar exclusivamente esse artefato; ativação de hospedagem depende da configuração do repositório. Entrega em branch e PR preserva a revisão antes do deploy.
 **Evidência:** `scripts/build.mjs`, teste da distribuição e workflow Pages manual.
 
+## D-011 — APK de prática para avaliação
+
+**Data:** 2026-11-06
+
+**Status:** vigente para esta implementação
+
+**Contexto:** é necessário avaliar o protótipo em Android usando ADB, enquanto a navegação em portais reais e a especificação funcional completa continuam pendentes.
+
+**Decisão:** empacotar uma atividade offline em WebView com recursos locais e uma ponte restrita ao TTS local. O aplicativo não solicita internet ou microfone, e a pessoa executa as ações. O pacote de teste usa assinatura de depuração.
+
+**Impacto:** este APK não integra Gov.br, não é uma versão de loja e não comprova por si só acessibilidade, privacidade ou atendimento a T1–T5. Build, assinatura e execução em dispositivo exigem ferramentas e evidências próprias.
+
+**Evidência:** `android/`, `android/tests/voice-adapter.test.mjs`, `docs/testes-android-adb.md` e `.github/workflows/android-apk.yml`.
+
 ## Modelo para novas decisões
 
 ```md

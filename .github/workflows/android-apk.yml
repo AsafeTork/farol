@@ -1,0 +1,87 @@
+name: Android - APK de testes
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'src/**'
+      - 'assets/**'
+      - 'pratica.html'
+      - 'docs/testes-android-adb.md'
+      - '.github/workflows/android-apk.yml'
+  push:
+    tags:
+      - 'android-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar motor compartilhado
+        run: npm run validate
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Instalar plataforma Android e ferramentas
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gerar APK de depuração
+        run: gradle -p android :app:assembleDebug --no-daemon --stacktrace
+      - name: Verificar assinatura, permissões e checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/android-release
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist/android-release/farol-android-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs dist/android-release/farol-android-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging dist/android-release/farol-android-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions dist/android-release/farol-android-debug.apk > dist/android-release/permissoes.txt
+          if grep -Eq 'android.permission.(INTERNET|RECORD_AUDIO)' dist/android-release/permissoes.txt; then
+            echo 'O APK de prática não deve solicitar internet nem microfone.' >&2
+            exit 1
+          fi
+          cp docs/testes-android-adb.md dist/android-release/testes-android-adb.md
+          (cd dist/android-release && sha256sum farol-android-debug.apk > SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: farol-android-apk-teste
+          path: dist/android-release/
+          if-no-files-found: error
+
+  publicar-pre-release:
+    if: startsWith(github.ref, 'refs/tags/android-v')
+    needs: build-apk
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: farol-android-apk-teste
+          path: dist/android-release
+      - name: Criar pré-release com APK e roteiro de testes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" \
+            dist/android-release/farol-android-debug.apk \
+            dist/android-release/SHA256SUMS \
+            dist/android-release/permissoes.txt \
+            dist/android-release/testes-android-adb.md \
+            --title "Farol Android ${GITHUB_REF_NAME} — testes" \
+            --notes-file docs/release-notes-android.md \
+            --prerelease --verify-tag

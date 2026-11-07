@@ -6,3 +6,8 @@ evidencia/*.webm
 evidencia/browser-results.json
 .env
 *.log
+android/.gradle/
+android/local.properties
+android/**/build/
+*.keystore
+*.jks
