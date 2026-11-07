@@ -1,0 +1,8 @@
+node_modules/
+dist/
+paginas-farol/
+evidencia/*.png
+evidencia/*.webm
+evidencia/browser-results.json
+.env
+*.log

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Farol — orientação passo a passo",
+  "version": "0.1.0",
+  "description": "Explica, destaca e lê os passos da página. Você executa cada ação. MVP do IAssistente Intergeracional.",
+  "minimum_chrome_version": "120",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "optional_host_permissions": ["http://127.0.0.1/*"],
+  "action": { "default_title": "Abrir Farol nesta página" },
+  "background": { "service_worker": "background.mjs", "type": "module" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "web_accessible_resources": [{
+    "resources": ["src/ui/*.mjs", "src/core/*.mjs"],
+    "matches": ["http://*/*", "https://*/*"]
+  }],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:8787; base-uri 'none'"
+  }
+}

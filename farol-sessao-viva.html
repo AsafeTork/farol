@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farol — Sessão Viva (Gemini Live × GPT-Live)</title>
-<meta name="description" content="Prancha da Sessão Viva do Farol: estética de sessão de voz (Gemini Live), mapeamento de toque no portal e voz pt-BR via GPT-Live. Projeto SBGAMES 2026 — IFPA Bragança.">
+<title>Farol — Sessão Viva, conceito de interação</title>
+<meta name="description" content="Prancha conceitual da Sessão Viva do Farol: uma proposta futura de interação por voz e legenda. Projeto do IFPA Bragança.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M24.5 21 6.5 14v14z' fill='%23FFCD07'/%3E%3Cpath d='M39.5 21 57.5 14v14z' fill='%23FFCD07'/%3E%3Crect x='21' y='48' width='22' height='5' rx='2.5' fill='%2304183F'/%3E%3Cpath d='M25.6 48 28 26h8l2.4 22z' fill='%2304183F'/%3E%3Ccircle cx='32' cy='20' r='7' fill='%23FFCD07'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -179,7 +179,7 @@
   <div class="conteudo">
     <p class="etiqueta">Farol · design de interação · v1</p>
     <h1 class="titulo">Sessão Viva: quando o Farol <em>acende</em> e conversa.</h1>
-    <p class="medida">O visual da sessão em tempo real no app: estética de pill de voz sobre a própria tela (padrão do Gemini Live desde o redesign de abril/2026), mapeamento de toque com o anel amarelo, e a voz pt-BR do GPT-Live (OpenAI, API desde 10/set/2026). O portal continua visível — o Farol nunca toma a tela inteira.</p>
+    <p class="medida">Esta prancha ilustra uma possível conversa com voz e legenda sobre a própria tela. A Sessão Viva é uma proposta futura; esta página não capta áudio nem inicia uma conversa. O portal permanece visível e a pessoa continua no controle.</p>
   </div>
 </header>
 
@@ -190,7 +190,7 @@
     <div class="conteudo">
       <p class="etiqueta">A sessão, em três momentos</p>
       <h2 class="titulo">O portal é o herói. A sessão é a pilha.</h2>
-      <p class="medida">Em vez da tela cheia antiga do Gemini Live, o Farol flutua como uma pílula no rodapé: você vê o gov.br, o anel amarelo aponta o alvo, a pilha do farol pulsa no ritmo da conversa.</p>
+      <p class="medida">Neste conceito, o Farol flutua como uma pílula no rodapé: você vê o portal, o anel amarelo aponta o alvo e o indicador acompanha a conversa.</p>
 
       <div class="palco">
         <!-- (a) OUVINDO — usuário fala, waveform amarela -->
@@ -298,10 +298,10 @@
               <div class="navbar" style="color:#262627" aria-hidden="true"><span class="pilha"></span></div>
             </div>
           </div>
-          <figcaption><b>(c) Esperando</b><span>sem interrupção: o GPT-Live espera a pessoa terminar</span></figcaption>
+          <figcaption><b>(c) Esperando</b><span>a proposta reserva tempo para a pessoa terminar</span></figcaption>
         </figure>
       </div>
-      <p class="fonte">Inspirado no <b>Gemini Live</b> (pill flutuante com waveform sobre a própria tela — redesign testado desde abr/2026, 9to5Google) e no comportamento de <b>escuta contínua</b> do GPT-Live (não interrompe quando a pessoa pensa — OpenAI, jul/2026). O balão sob a pílula é a <b>legenda ao vivo</b>: mostra quem fala (VOCÊ ou FAROL) e o que foi dito, sempre em texto. Transcrições ilustrativas. Acessos em 23/10/2026 · re-verificação claims 25/10/2026.</p>
+      <p class="fonte">O balão sob a pílula representa uma possível legenda ao vivo com indicação de quem fala. Transcrições e estados são ilustrativos; a interação ainda não foi implementada.</p>
     </div>
   </section>
 
@@ -331,7 +331,7 @@
             <span class="feixe"></span><span class="nucleo"></span>
             <span class="mini-onda"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           </div>
-          <b>Pensando</b><span>feixe do farol girando — consulta à IA em nuvem</span>
+          <b>Pensando</b><span>feixe do farol girando — preparando uma resposta</span>
         </div>
         <div class="estado falando">
           <div class="mini-pill" aria-hidden="true">
@@ -348,18 +348,15 @@
   <section class="bloco">
     <div class="conteudo">
       <p class="etiqueta">A voz</p>
-      <h2 class="titulo">GPT-Live em pt-BR: conversa, não comando.</h2>
-      <p class="medida">O paper MVP equilibra custo zero para o Ensino Médio: LLM em tier gratuito ou processamento local. A Sessão Viva é a evolução pós-MVP — a voz entra pela porta da nuvem: o <b>GPT-Live-1</b> está na API da OpenAI desde 10/set/2026 — full-duplex (escuta e fala ao mesmo tempo), delega raciocínio a um modelo de fronteira em segundo plano e aceita interrupção natural. A versão 1.1 (15/out/2026) chegou primeiro ao app ChatGPT; na API, ainda sem data.</p>
+      <h2 class="titulo">Voz e legenda: uma proposta futura.</h2>
+      <p class="medida">A Sessão Viva é uma evolução posterior ao MVP. Sua implementação exigirá escolher tecnologia, avaliar custo e privacidade e testar a experiência com as pessoas que vão usá-la. O protótipo atual usa leitura em voz alta do próprio aparelho, sem microfone.</p>
       <dl class="tabela">
-        <div class="linha"><dt>Modelo de voz</dt><dd>gpt-live-1 (API, desde 10/set/2026)</dd></div>
-        <div class="linha"><dt>Custo da voz</dt><dd>US$ 0,05 / min (camada de voz; thinking à parte)</dd></div>
-        <div class="linha"><dt>Arquitetura</dt><dd>full-duplex · escuta contínua · interrupção natural</dd></div>
-        <div class="linha"><dt>Delegação</dt><dd>busca/raciocínio → modelo de fronteira em background</dd></div>
-        <div class="linha"><dt>pt-BR</dt><dd class="txt">idioma suportado (release notes ChatGPT); voz dedicada no 1.1 veio p/ 7 idiomas — pt-BR entre os “demais idiomas não-inglês”</dd></div>
-        <div class="linha"><dt>Encaixe no paper</dt><dd class="txt">evolução pós-MVP — o paper mantém custo zero: LLM em tier gratuito ou local, cache local (RNF01) e privacidade LGPD (RNF02); chamadas server-side e plano pago ficam fora do escopo do MVP</dd></div>
-        <div class="linha"><dt>Privacidade</dt><dd class="txt">só a fala vai à nuvem; saneamento (RNF02 — LGPD) acontece antes, no aparelho</dd></div>
+        <div class="linha"><dt>Estado</dt><dd>Conceito visual, ainda sem implementação</dd></div>
+        <div class="linha"><dt>Microfone</dt><dd>Planejado como opção por sessão, com encerramento explícito</dd></div>
+        <div class="linha"><dt>Legenda</dt><dd class="txt">Acompanhar a conversa por texto é um objetivo da proposta</dd></div>
+        <div class="linha"><dt>Provedor e custo</dt><dd class="txt">Ainda serão escolhidos e avaliados</dd></div>
+        <div class="linha"><dt>Privacidade</dt><dd class="txt">O tratamento de áudio e dados precisa ser definido e validado antes da implementação</dd></div>
       </dl>
-      <p class="fonte">Fontes (23/10/2026): OpenAI, “Introducing GPT-Live” (openai.com/index/introducing-gpt-live) · ChatGPT release notes (help.openai.com) · DataNorth, “GPT-Live-1.1 new voices” (16/10/2026) · 9to5Google, “Gemini Live redesign” (19/04/2026) · Android Authority, “Gemini neural design” (24/07/2026).</p>
     </div>
   </section>
 
