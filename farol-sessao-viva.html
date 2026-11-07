@@ -349,15 +349,15 @@
     <div class="conteudo">
       <p class="etiqueta">A voz</p>
       <h2 class="titulo">GPT-Live em pt-BR: conversa, não comando.</h2>
-      <p class="medida">O paper define o LLM em nuvem com provedor em plano pago (Gemini, com OpenAI como contingência). A voz entra pela mesma porta: o <b>GPT-Live-1</b> está na API da OpenAI desde 10/set/2026 — full-duplex (escuta e fala ao mesmo tempo), delega raciocínio a um modelo de fronteira em segundo plano e aceita interrupção natural. A versão 1.1 (15/out/2026) chegou primeiro ao app ChatGPT; na API, ainda sem data.</p>
+      <p class="medida">O paper MVP equilibra custo zero para o Ensino Médio: LLM em tier gratuito ou processamento local. A Sessão Viva é a evolução pós-MVP — a voz entra pela porta da nuvem: o <b>GPT-Live-1</b> está na API da OpenAI desde 10/set/2026 — full-duplex (escuta e fala ao mesmo tempo), delega raciocínio a um modelo de fronteira em segundo plano e aceita interrupção natural. A versão 1.1 (15/out/2026) chegou primeiro ao app ChatGPT; na API, ainda sem data.</p>
       <dl class="tabela">
         <div class="linha"><dt>Modelo de voz</dt><dd>gpt-live-1 (API, desde 10/set/2026)</dd></div>
         <div class="linha"><dt>Custo da voz</dt><dd>US$ 0,05 / min (camada de voz; thinking à parte)</dd></div>
         <div class="linha"><dt>Arquitetura</dt><dd>full-duplex · escuta contínua · interrupção natural</dd></div>
         <div class="linha"><dt>Delegação</dt><dd>busca/raciocínio → modelo de fronteira em background</dd></div>
         <div class="linha"><dt>pt-BR</dt><dd class="txt">idioma suportado (release notes ChatGPT); voz dedicada no 1.1 veio p/ 7 idiomas — pt-BR entre os “demais idiomas não-inglês”</dd></div>
-        <div class="linha"><dt>Encaixe no paper</dt><dd class="txt">RNF06 — chamadas server-side, plano pago, cache local; OpenAI já é o provedor de contingência do Artigo.tex</dd></div>
-        <div class="linha"><dt>Privacidade</dt><dd class="txt">só a fala vai à nuvem; saneamento (RNF03) acontece antes, no aparelho</dd></div>
+        <div class="linha"><dt>Encaixe no paper</dt><dd class="txt">evolução pós-MVP — o paper mantém custo zero: LLM em tier gratuito ou local, cache local (RNF01) e privacidade LGPD (RNF02); chamadas server-side e plano pago ficam fora do escopo do MVP</dd></div>
+        <div class="linha"><dt>Privacidade</dt><dd class="txt">só a fala vai à nuvem; saneamento (RNF02 — LGPD) acontece antes, no aparelho</dd></div>
       </dl>
       <p class="fonte">Fontes (23/10/2026): OpenAI, “Introducing GPT-Live” (openai.com/index/introducing-gpt-live) · ChatGPT release notes (help.openai.com) · DataNorth, “GPT-Live-1.1 new voices” (16/10/2026) · 9to5Google, “Gemini Live redesign” (19/04/2026) · Android Authority, “Gemini neural design” (24/07/2026).</p>
     </div>
