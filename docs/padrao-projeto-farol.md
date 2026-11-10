@@ -59,3 +59,5 @@ Uma mudança técnica só está pronta quando tiver testes do módulo, tratament
 ## 6. Regra de publicação
 
 O Pages publica somente `paginas-farol/`. Paper, handoff, especificações, fontes Overleaf, auditorias internas e documentos de agentes não entram nesse diretório. Antes do push, conferir o diff completo e os arquivos rastreados.
+
+> **Exceção temporária (10/11/2026 — decisão do dono):** `paper/` (Artigo.tex + Figuras + `Artigo.pdf`) entra no repositório **por enquanto**, para que o professor acesse os arquivos da atividade pelo link. E o repo foi tornado público nesta data pelo mesmo motivo. Reavaliar o fechamento (paper e/ou repo) depois da entrega da disciplina — remover esta nota quando voltar à regra padrão.

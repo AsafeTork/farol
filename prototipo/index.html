@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farol — Protótipo funcional do app (gov.br)</title>
+<meta name="description" content="Protótipo funcional do IAssistente Intergeracional (Projeto Farol): captura semântica, destaque visual amarelo, voz pt-BR e tradução de erros sobre o gov.br simulado. RF01–RF03, RNF01–RNF02 do Artigo.tex.">
+<!--
+  ESTILO: Tátilite × institucional gov.br (receita do mockup aprovado no Artigo.tex)
+  60% branco/fundo · 30% azul #1351B4 · 10% amarelo #FFCD07 (acento do anel de foco)
+  Fonte: Atkinson Hyperlegible (hiperlegibilidade = sujeito do domínio)
+  ABUSE guardado: pulso/anel só em evento real (troca de passo) · prefers-reduced-motion respeitado
+-->
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#1351B4; --noite:#04183F; --noite-2:#0C326F; --noite-fundo:#020D24;
+    --amarelo:#FFCD07; --amarelo-quente:#FFB020; --creme:#FFFBF0;
+    --fundo:#F0F3F7; --branco:#FFFFFF; --ink:#242424; --suave:#E0EDFF;
+    --cinza:#55708F; --ok:#1B7A3D; --ok-fundo:#E7F4EC; --erro-fundo:#FCEBEB;
+    --borda:#D8E0EB; --espaco:8px; /* régua 8pt */
+  }
+  *{ margin:0; padding:0; box-sizing:border-box }
+  html{ -webkit-text-size-adjust:100% }
+  body{
+    min-height:100vh; background:var(--fundo); color:var(--ink);
+    font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+    font-weight:400; font-size:16px; line-height:1.4;
+  }
+  a{ color:var(--azul) }
+  :focus-visible{ outline:2px solid var(--azul); outline-offset:2px }
+
+  /* ---------- topo ---------- */
+  .topo{
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:16px 24px; background:var(--branco); border-bottom:1px solid var(--borda);
+  }
+  .topo .marca{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:18px; color:var(--noite-2) }
+  .topo .farol-ponto{ width:16px; height:16px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #FFB020, #FFCD07 60%, rgba(255,205,7,.25)); }
+  .topo .chip{ border:1px solid var(--borda); border-radius:999px; padding:4px 12px;
+    font-size:13px; color:var(--noite-2); background:var(--creme); font-weight:700 }
+  .topo .links{ margin-left:auto; display:flex; gap:16px; font-size:14px }
+  @media (max-width:760px){ .topo .links{ display:none } }
+
+  .cena{ display:flex; gap:32px; padding:32px 24px; max-width:1120px; margin:0 auto; align-items:flex-start; justify-content:center }
+  @media (max-width:900px){ .cena{ flex-direction:column; align-items:center; gap:24px } }
+
+  /* ---------- telefone ---------- */
+  .telefone{ flex:none; width:352px; background:var(--noite-fundo); border-radius:34px;
+    padding:8px; box-shadow:0 12px 28px rgba(12,50,111,.16) }
+  .tela{ background:var(--branco); border-radius:26px; overflow:hidden; height:640px; display:flex; flex-direction:column; position:relative }
+  @media (max-width:400px){ .telefone{ width:100%; max-width:352px } .tela{ height:600px } }
+
+  .status{ flex:none; height:28px; display:flex; align-items:center; padding:0 16px;
+    font-size:12px; font-weight:700; color:var(--ink); position:relative }
+  .status .hora{ margin-right:auto }
+  .status .cam{ position:absolute; left:50%; top:50%; width:9px; height:9px; transform:translate(-50%,-50%);
+    border-radius:50%; background:#0E1726 }
+
+  .barra-gov{ flex:none; background:var(--azul); color:var(--branco); padding:10px 16px;
+    display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px }
+  .barra-gov b{ font-size:17px; letter-spacing:-.2px }
+  .barra-gov span{ margin-left:auto; font-weight:400; font-size:13px; opacity:.92 }
+
+  .conteudo-gov{ flex:1; overflow-y:auto; padding:16px; background:var(--branco) }
+  .painel{ border:1px solid var(--borda); border-radius:8px; padding:16px; background:var(--branco) }
+  .painel + .painel{ margin-top:8px }
+  .painel h1{ font-size:20px; font-weight:700; color:var(--ink); line-height:1.25 }
+  .painel p{ font-size:14px; color:var(--cinza); margin-top:4px }
+
+  .rotulo{ display:block; font-size:13px; font-weight:700; color:var(--ink); margin:16px 0 4px }
+  .campo{ width:100%; height:44px; border:1px solid var(--borda); border-radius:8px;
+    padding:0 12px; font-size:16px; font-family:inherit; color:var(--ink); background:var(--branco) }
+  .campo::placeholder{ color:#9AB0D8 }
+  .campo:focus{ outline:none; border-color:var(--azul) }
+
+  /* anel de destaque do Farol (RF03) — o acento de 10% */
+  .farol-alvo{ position:relative }
+  .farol-alvo::after{
+    content:""; position:absolute; inset:-6px; border-radius:10px; pointer-events:none;
+    border:3px solid var(--amarelo);
+    box-shadow:0 0 0 1px rgba(255,176,32,.55), 0 2px 10px rgba(255,176,32,.28);
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .farol-alvo::after{ animation:anel 1.4s ease-in-out 3 } /* gate por evento: 3 pulsos e para */
+    @keyframes anel{ 50%{ box-shadow:0 0 0 4px rgba(255,176,32,.35), 0 4px 18px rgba(255,176,32,.38) } }
+  }
+
+  .botao{ display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    height:44px; padding:0 24px; border:0; border-radius:999px; cursor:pointer;
+    font-family:inherit; font-size:15px; font-weight:700 }
+  .botao-azul{ background:var(--azul); color:var(--branco) }
+  .botao-azul:hover{ background:#155BCB }
+  .botao-azul:active{ transform:translateY(1px) }
+  .botao-sec{ background:transparent; color:var(--azul); border:1px solid var(--azul) }
+  .botao-sec:hover{ background:var(--suave) }
+  .botao-bloco{ width:100% }
+  .fileira{ display:flex; gap:8px; margin-top:16px }
+  .fileira .botao{ flex:1 }
+
+  /* estados */
+  .aviso-erro{ margin-top:16px; border:1px solid #E4B3B3; background:var(--erro-fundo);
+    border-radius:8px; padding:12px; font-size:14px }
+  .aviso-erro .cod{ display:block; font-size:13px; color:#8A3030; font-weight:700; margin-bottom:4px }
+  .aviso-erro .tecnico{ color:#8A3030; font-size:13.5px; word-break:break-word }
+  .aviso-ok{ margin-top:16px; border:1px solid #BFE0CB; background:var(--ok-fundo);
+    border-radius:8px; padding:12px; font-size:14px; color:var(--ok) }
+  .selo{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--borda);
+    border-radius:999px; padding:4px 12px; font-size:12.5px; color:var(--noite-2); background:var(--suave) }
+
+  /* ---------- beacon do Farol (pill de voz) ---------- */
+  .beacon-zona{ flex:none; padding:8px 16px 12px; background:linear-gradient(180deg, rgba(240,243,247,0), var(--fundo) 40%) }
+  .farol-card{ background:var(--noite); color:#EAF0FA; border-radius:16px; padding:12px 16px;
+    box-shadow:0 8px 20px rgba(4,24,63,.35) }
+  .farol-cab{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:#FFCD07 }
+  .farol-cab .passo{ margin-left:auto; color:#C5D2E8; font-weight:400 }
+  .farol-msg{ margin-top:4px; font-size:15px; line-height:1.35 }
+  .farol-erro-txt{ margin-top:4px; font-size:15px; line-height:1.35 }
+  .farol-erro-txt b{ color:#FFCD07 }
+  .farol-aca{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap }
+  .chip-acao{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22);
+    color:#EAF0FA; border-radius:999px; padding:5px 12px; font-size:12.5px; font-weight:700;
+    cursor:pointer; font-family:inherit }
+  .chip-acao:hover{ background:rgba(255,255,255,.16) }
+  .chip-acao[aria-pressed="true"]{ background:var(--amarelo); color:var(--noite); border-color:var(--amarelo) }
+  .onda{ display:inline-flex; align-items:flex-end; gap:2px; height:14px; margin-left:2px }
+  .onda i{ width:3px; background:#FFCD07; border-radius:1px; height:4px; opacity:.9 }
+  .farol-falando .onda i{ animation:onda 1s ease-in-out infinite alternate }
+  @media (prefers-reduced-motion: reduce){ .farol-falando .onda i{ animation:none } }
+  .farol-falando .onda i:nth-child(2){ animation-delay:.15s }
+  .farol-falando .onda i:nth-child(3){ animation-delay:.3s }
+  .farol-falando .onda i:nth-child(4){ animation-delay:.45s }
+  @keyframes onda{ from{ height:4px } to{ height:14px } }
+  .gesto{ flex:none; height:20px; display:flex; justify-content:center; align-items:center }
+  .gesto i{ width:96px; height:4px; border-radius:2px; background:#1F2733; opacity:.75 }
+
+  /* ---------- painel lateral (mesa do Farol) ---------- */
+  .mesa{ flex:1; min-width:300px; max-width:520px; display:flex; flex-direction:column; gap:16px }
+  .mesa .card{ background:var(--branco); border:1px solid var(--borda); border-radius:8px; padding:16px }
+  .mesa h2{ font-size:15px; font-weight:700; color:var(--noite-2); letter-spacing:.2px; text-transform:uppercase; font-size:13px }
+  .mesa .explic{ font-size:14px; color:var(--cinza); margin-top:4px }
+  .arvore{ margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:13.5px }
+  .arvore li{ list-style:none; display:flex; gap:8px; align-items:baseline; padding:4px 8px;
+    border:1px solid var(--borda); border-radius:8px }
+  .arvore .papel{ font-weight:700; color:var(--noite-2); font-size:12px; min-width:64px }
+  .arvore li.alvo{ border-color:var(--amarelo-quente); background:var(--creme) }
+  .arvore .desc{ color:var(--cinza); overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .log{ margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--cinza) }
+  .log b{ color:var(--ink) }
+  .priv{ display:flex; gap:8px; align-items:flex-start; background:var(--creme); border:1px solid var(--borda);
+    border-radius:8px; padding:12px; font-size:13px; color:var(--noite-2) }
+  .priv b{ color:var(--noite-2) }
+  .rodape-mesa{ font-size:12.5px; color:var(--cinza) }
+</style>
+</head>
+<body>
+<header class="topo">
+  <span class="marca"><span class="farol-ponto" aria-hidden="true"></span>Farol</span>
+  <span class="chip">Protótipo funcional · atividade de laboratório</span>
+  <nav class="links">
+    <a href="/farol/">Landing</a>
+    <a href="https://github.com/AsafeTork/farol">Repositório</a>
+    <a href="/farol/paper/Artigo.pdf">Paper (PDF)</a>
+  </nav>
+</header>
+
+<main class="cena">
+  <!-- ============ TELEFONE: gov.br simulado + Farol por cima ============ -->
+  <section class="telefone" aria-label="Simulação do aplicativo Farol sobre o gov.br">
+    <div class="tela">
+      <div class="status"><span class="hora">14:39</span><span class="cam" aria-hidden="true"></span><span aria-hidden="true">▦ ▲ 4G</span></div>
+      <div class="barra-gov"><b>gov.br</b><span>Prova de vida digital</span></div>
+
+      <div class="conteudo-gov" id="gov">
+        <!-- tela 1: entrada -->
+        <section data-tela="entrada">
+          <div class="painel">
+            <h1>Entrar com gov.br</h1>
+            <p>Use sua conta gov.br para acessar serviços públicos.</p>
+            <div class="fileira"><button class="botao botao-azul botao-bloco" data-acao="ir-cpf">Entrar com gov.br</button></div>
+          </div>
+          <div class="painel">
+            <p style="margin-top:0">Problemas de acesso? Falar com o Farol: ele guia passo a passo, com destaque na tela e voz em português.</p>
+          </div>
+        </section>
+
+        <!-- tela 2: CPF -->
+        <section data-tela="cpf" hidden>
+          <div class="painel">
+            <h1>Informe seu CPF</h1>
+            <div class="rotulo" id="rot-cpf">CPF</div>
+            <input class="campo" id="campo-cpf" inputmode="numeric" autocomplete="off"
+                   placeholder="000.000.000-00" aria-describedby="rot-cpf">
+            <div class="fileira">
+              <button class="botao botao-sec" data-acao="voltar">Voltar</button>
+              <button class="botao botao-azul" data-acao="continuar">Continuar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- tela 3: erro técnico + tradução do Farol -->
+        <section data-tela="erro" hidden>
+          <div class="painel">
+            <h1>Acesso bloqueado</h1>
+            <div class="aviso-erro">
+              <span class="cod">[DATA-1072] · ERR_SESSION_TIMEOUT</span>
+              <span class="tecnico">request 504: host auth.gxgov.gov.br rejected — ECONNRESET on session pool (retry 3/3)</span>
+            </div>
+            <div class="fileira"><button class="botao botao-azul botao-bloco" data-acao="encerrar">Encerrar acesso</button></div>
+          </div>
+        </section>
+
+        <!-- tela 4: resolvido -->
+        <section data-tela="resolvido" hidden>
+          <div class="painel">
+            <h1>Conta identificada</h1>
+            <p>Este CPF já tem uma conta ativa em outro aparelho. Na conta gov.br oficial, escolha “Desconectar outros aparelhos”.</p>
+            <div class="aviso-ok"><b>Tradução do Farol aplicada.</b> Nada aqui saiu do aparelho: a mensagem foi traduzida localmente (RNF02).</div>
+            <div class="fileira">
+              <button class="botao botao-sec botao-bloco" data-acao="reiniciar">Começar de novo</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- beacon do Farol (RF02 + RF03) -->
+      <div class="beacon-zona">
+        <div class="farol-card" id="farol" role="region" aria-live="polite" aria-label="Orientação do Farol">
+          <div class="farol-cab">
+            <span aria-hidden="true">●</span> Farol <span id="estado-voz" class="passo">voz</span>
+            <span class="passo" id="passo-n">—</span>
+          </div>
+          <p class="farol-msg" id="farol-msg">Quando quiser entrar, toque em “Entrar com gov.br” — eu marco o caminho.</p>
+          <div class="farol-aca">
+            <button class="chip-acao" id="btn-voz" aria-pressed="true">🔊 Falar</button>
+            <button class="chip-acao" id="btn-repetir">Repetir voz</button>
+            <button class="chip-acao" id="btn-explicar">Explicar diferente</button>
+          </div>
+        </div>
+      </div>
+      <div class="gesto"><i aria-hidden="true"></i></div>
+    </div>
+  </section>
+
+  <!-- ============ MESA: o que o Farol está fazendo ============ -->
+  <aside class="mesa" aria-label="Mesa do Farol: captura, passos e privacidade">
+    <div class="card">
+      <h2>RF01 · Captura semântica (árvore de acessibilidade)</h2>
+      <p class="explic">Elementos da tela atual, como o Android WebView os entrega ao Farol — captura real do DOM desta página.</p>
+      <ul class="arvore" id="arvore"></ul>
+    </div>
+    <div class="card">
+      <h2>Roteiro de navegação (cache local · RNF01)</h2>
+      <p class="explic">O roteiro fica salvo no aparelho (localStorage). Nada sai para a rede — este protótipo não faz nenhuma requisição (RNF02 · LGPD).</p>
+      <p class="log" id="log"></p>
+    </div>
+    <div class="card priv">
+      <span aria-hidden="true">🔒</span>
+      <p style="margin:0"><b>Privacidade (RNF02):</b> captura, tradução e voz acontecem no próprio dispositivo. CPF digitado aqui é mantido em memória e descartado ao reiniciar.</p>
+    </div>
+    <p class="rodape-mesa">Protótipo do Projeto Farol · IAssistente Intergeracional (tutoria reversa) · IFPA Bragança · RF01–RF03, RNF01–RNF02 conforme o Artigo.tex (SBGAMES 2026).</p>
+  </aside>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var T = document.querySelector('.tela');
+
+  /* ---- estado da tela gov.br ---- */
+  var telas = ['entrada','cpf','erro','resolvido'];
+  var telaAtual = 'entrada';
+
+  /* ---- RF02: dicionário de tradução de erros técnicos ---- */
+  var TRADUCAO = {
+    "[DATA-1072] ERR_SESSION_TIMEOUT":
+      "Este CPF já tem uma conta ativa em outro aparelho. Você pode desconectar os outros aparelhos na sua conta gov.br pessoal."
+  };
+
+  /* ---- RNF01: roteiro em cache ---- */
+  var CHAVE = 'farol-roteiro-govbr';
+  function cacheSalvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify({tela:telaAtual})); }catch(e){} }
+  function cacheLer(){ try{ return JSON.parse(localStorage.getItem(CHAVE)||'null'); }catch(e){ return null; } }
+
+  /* ---- RF03: passos do roteiro (destaque + voz) ---- */
+  var passos = {
+    entrada: { texto:'Quando quiser entrar, toque em “Entrar com gov.br” — eu marco o caminho.', alvo:'[data-acao="ir-cpf"]', explicar:'O primeiro passo é tocar no botão azul grande, em cima. Eu deixo a borda dele amarela para você achar fácil.' },
+    cpf:     { texto:'Digite o número do seu CPF no campo com a borda amarela.', alvo:'#campo-cpf', explicar:'O campo pede os onze números do CPF. Pode digitar com ou sem pontos e traços — depois toque em Continuar.' },
+    erro:    { texto:'Deu um erro técnico na tela. Eu traduzi para você, em português claro.', alvo:'.aviso-erro', explicar:'O gov.br mostrou um erro de conexão com códigos técnicos. Isso assusta qualquer pessoa — por isso eu traduzi: a conta existe em outro aparelho, e nada se perdeu.' },
+    resolvido:{ texto:'Pronto! A conta foi identificada sem sair da sua mão.', alvo:'.aviso-ok', explicar:'O caminho a seguir está na mensagem: na sua conta gov.br pessoal, escolha “Desconectar outros aparelhos”.' }
+  };
+
+  /* ---- voz (Web Speech API, pt-BR) ---- */
+  var vozLigada = true, falando = false;
+  function vozDisponivel(){ return 'speechSynthesis' in window; }
+  function falar(txt){
+    var temVoz = vozLigada && vozDisponivel() && (speechSynthesis.getVoices()||[]).length > 0;
+    atualizarVozChip(temVoz);
+    if (!temVoz) return;
+    try{ speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(txt);
+      u.lang='pt-BR'; u.rate=1.0;
+      u.onend = u.onerror = function(){ atualizarVozChip(falando=false); };
+      speechSynthesis.speak(u);
+    }catch(e){ atualizarVozChip(false); }
+  }
+  function pararVoz(){ if (vozDisponivel()) try{ speechSynthesis.cancel(); }catch(e){} }
+  function temVozes(){ return vozDisponivel() && (speechSynthesis.getVoices()||[]).length > 0; }
+  function atualizarVozChip(falandoAgora){
+    var c = document.getElementById('farol');
+    c.classList.toggle('farol-falando', !!falandoAgora);
+    var e = document.getElementById('estado-voz');
+    e.textContent = !temVozes() ? 'voz indisponível neste navegador' : (vozLigada ? (falandoAgora ? 'falando…' : 'voz') : 'mudo');
+  }
+  if (vozDisponivel() && speechSynthesis.addEventListener){
+    speechSynthesis.addEventListener('voiceschanged', function(){ atualizarVozChip(false); });
+  }
+
+  /* ---- tela: mostrar/ocultar + arvore + passo ---- */
+  function mostrar(tela){
+    telas.forEach(function(t){
+      var s = document.querySelector('[data-tela="'+t+'"]');
+      if (s) s.hidden = (t !== tela);
+    });
+    telaAtual = tela;
+    pintarArvore();
+    aplicarPasso();
+    cacheSalvar();
+    renderLog();
+  }
+
+  function aplicarPasso(){
+    var p = passos[telaAtual];
+    document.querySelectorAll('.farol-alvo').forEach(function(x){ x.classList.remove('farol-alvo'); });
+    var alvo = T.querySelector(p.alvo);
+    if (alvo){ alvo.classList.add('farol-alvo'); /* reflow para reiniciar o pulso por evento */ void alvo.offsetWidth; }
+    document.getElementById('farol-msg').textContent = p.texto;
+    var n = {entrada:1, cpf:2, erro:3, resolvido:4}[telaAtual];
+    document.getElementById('passo-n').textContent = 'passo ' + n + '/4';
+    falar(p.texto);
+  }
+
+  /* ---- RF01: captura REAL — roles dos elementos da tela atual ---- */
+  function pintarArvore(){
+    var ul = document.getElementById('arvore'); ul.innerHTML = '';
+    var p = passos[telaAtual];
+    T.querySelectorAll('[data-tela="'+telaAtual+'"] button, [data-tela="'+telaAtual+'"] input').forEach(function(el){
+      var li = document.createElement('li');
+      var papel = el.tagName === 'INPUT' ? 'textbox' : 'button';
+      var desc = (el.id === 'campo-cpf' ? 'CPF · ' : '') + (el.textContent || el.placeholder || '').trim() || '—';
+      li.innerHTML = '<span class="papel">'+papel+'</span><span class="desc"></span>';
+      li.querySelector('.desc').textContent = desc.slice(0, 44);
+      if (el.classList.contains('farol-alvo') || (p.alvo && el.matches(p.alvo))) li.classList.add('alvo');
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---- log da mesa ---- */
+  var retomado = false;
+  function renderLog(){
+    var c = cacheLer();
+    var msg = telaAtual==='resolvido'
+      ? 'roteiro gov.br concluído e <b>salvo em cache</b> (RNF01)'
+      : 'roteiro <b>gov.br · login</b> em cache — passo ' + ({entrada:1,cpf:2,erro:3,resolvido:4}[telaAtual]) + '/4' + (retomado ? ' (retomado de localStorage)' : '');
+    document.getElementById('log').innerHTML = '<span>▸ ' + msg + '</span>';
+  }
+
+  /* ---- eventos ---- */
+  document.getElementById('gov').addEventListener('click', function(ev){
+    var a = ev.target.closest('[data-acao]'); if (!a) return;
+    var acao = a.getAttribute('data-acao');
+    if (acao==='ir-cpf') mostrar('cpf');
+    else if (acao==='continuar') mostrar('erro');
+    else if (acao==='encerrar') mostrar('resolvido');
+    else if (acao==='voltar' || acao==='reiniciar'){ try{ localStorage.removeItem(CHAVE); }catch(e){} mostrar('entrada'); }
+  });
+  document.getElementById('btn-voz').addEventListener('click', function(){
+    vozLigada = !vozLigada;
+    this.setAttribute('aria-pressed', String(vozLigada));
+    this.textContent = vozLigada ? '🔊 Falar' : '🔇 Mudo';
+    if (!vozLigada) pararVoz(); else aplicarPasso();
+  });
+  document.getElementById('btn-repetir').addEventListener('click', function(){ falar(passos[telaAtual].texto); });
+  document.getElementById('btn-explicar').addEventListener('click', function(){ falar(passos[telaAtual].explicar); });
+
+  /* retomada do cache (RNF01) */
+  var salvo = cacheLer();
+  retomado = !!(salvo && telas.indexOf(salvo.tela) >= 0);
+  mostrar(retomado ? salvo.tela : 'entrada');
+})();
+</script>
+</body>
+</html>
