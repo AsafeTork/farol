@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farol — Paper SBGAMES 2026 (arquivos)</title>
+<meta name="description" content="Arquivos do paper IAssistente Intergeracional (Projeto Farol): PDF compilado, fonte LaTeX, figuras e importação de 1 clique no Overleaf.">
+<!-- ESTILO: Tátilite × institucional gov.br (tokens de assets/farol.css) -->
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --azul:#1351B4; --noite:#04183F; --noite-2:#0C326F; --amarelo:#FFCD07;
+    --creme:#FFFBF0; --fundo:#F0F3F7; --ink:#242424; --cinza:#55708F;
+    --borda:#D8E0EB; --suave:#E0EDFF }
+  *{ margin:0; padding:0; box-sizing:border-box }
+  body{ min-height:100vh; background:var(--fundo); color:var(--ink);
+    font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+    font-size:16px; line-height:1.4; padding:32px 24px }
+  main{ max-width:760px; margin:0 auto }
+  .marca{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:18px; color:var(--noite-2) }
+  .farol-ponto{ width:16px; height:16px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #FFB020, #FFCD07 60%, rgba(255,205,7,.25)) }
+  h1{ font-size:24px; font-weight:700; color:var(--ink); margin-top:24px; letter-spacing:-.3px }
+  .lead{ color:var(--cinza); margin-top:8px; max-width:60ch }
+  .card{ background:var(--branco); border:1px solid var(--borda); border-radius:8px; padding:16px; margin-top:24px }
+  .card h2{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.2px; color:var(--noite-2) }
+  ul{ list-style:none; margin-top:8px }
+  li{ display:flex; gap:8px; align-items:baseline; padding:8px 0; border-top:1px solid var(--borda); font-size:15px }
+  li:first-child{ border-top:0 }
+  li .tipo{ font-size:12px; font-weight:700; color:var(--noite-2); background:var(--suave);
+    border:1px solid var(--borda); border-radius:999px; padding:2px 10px; flex:none }
+  li a{ color:var(--azul); font-weight:700 }
+  li .obs{ color:var(--cinza); font-size:13px }
+  .voltar{ display:inline-block; margin-top:24px; color:var(--azul); font-weight:700 }
+  :focus-visible{ outline:2px solid var(--azul); outline-offset:2px }
+</style>
+</head>
+<body>
+<main>
+  <p class="marca"><span class="farol-ponto" aria-hidden="true"></span>Farol</p>
+  <h1>Paper — SBGAMES 2026</h1>
+  <p class="lead">IAssistente Intergeracional (tutoria reversa) · IFPA Bragança. Compilado: 5 páginas, com as figuras do projeto.</p>
+
+  <div class="card">
+    <h2>Arquivos</h2>
+    <ul>
+      <li><span class="tipo">PDF</span><span><a href="Artigo.pdf">Artigo.pdf</a> — <span class="obs">versão compilada, para leitura</span></span></li>
+      <li><span class="tipo">LaTeX</span><span><a href="Artigo.tex">Artigo.tex</a> — <span class="obs">fonte do artigo</span></span></li>
+      <li><span class="tipo">Figuras</span><span><a href="Figuras/Diagrama_Fluxo_System.pdf">fluxo</a> · <a href="Figuras/Arquitetura_Detalhada.pdf">arquitetura</a> · <a href="Figuras/Funcionalidades_Mockup.pdf">mockup</a> — <span class="obs">PDFs usados no artigo</span></span></li>
+      <li><span class="tipo">Overleaf</span><span><a href="farol-paper-overleaf.zip">farol-paper-overleaf.zip</a> — <span class="obs">importar em 1 clique (New Project → Upload Project)</span></span></li>
+      <li><span class="tipo">Fontes</span><span><a href="Referencias/referencias.bib">referencias.bib</a> · <a href="sbc-template.sty">sbc-template.sty</a> · <a href="caption2.sty">caption2.sty</a> · <a href="sbc.bst">sbc.bst</a> — <span class="obs">template SBC</span></span></li>
+    </ul>
+  </div>
+
+  <a class="voltar" href="/farol/">← Landing do projeto</a>
+</main>
+</body>
+</html>
