@@ -1,0 +1,6 @@
+/artifacts/
+/.secrets/
+**/.env
+**/__pycache__/
+*.keystore
+*.jks
