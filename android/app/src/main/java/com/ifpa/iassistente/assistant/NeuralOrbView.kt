@@ -50,7 +50,7 @@ class NeuralOrbView(context: Context, private val onClose: () -> Unit) : View(co
         super.onSizeChanged(w, h, oldw, oldh)
         radius = min(w, h) * 0.23f
         halo.shader = RadialGradient(w / 2f, h / 2f, radius * .3f, w / 2f, h / 2f, radius * 1.55f,
-            intArrayOf(0x66FFB020, 0x22FFCD07, 0x00000000), floatArrayOf(0f, .45f, 1f), Shader.TileMode.CLAMP)
+            longArrayOf(0x66FFB020L, 0x22FFCD07L, 0x00000000L), floatArrayOf(0f, .45f, 1f), Shader.TileMode.CLAMP)
         core.color = 0xFF04183F.toInt()
         dot.color = 0xFFFFCD07.toInt()
         zone.color = 0x26FFCD07
@@ -68,7 +68,7 @@ class NeuralOrbView(context: Context, private val onClose: () -> Unit) : View(co
 
         canvas.drawCircle(cx, cy, r * 1.5f, halo)
         core.shader = RadialGradient(cx - r * .25f, cy - r * .3f, r * .2f, cx, cy, r,
-            intArrayOf(0xFF155BCB, 0xFF04183F), floatArrayOf(0f, 1f), Shader.TileMode.CLAMP)
+            longArrayOf(0xFF155BCBL, 0xFF04183FL), floatArrayOf(0f, 1f), Shader.TileMode.CLAMP)
         canvas.drawCircle(cx, cy, r, core)
         // anel de vidro fosco
         core.shader = null
@@ -100,7 +100,7 @@ class NeuralOrbView(context: Context, private val onClose: () -> Unit) : View(co
         invalidate()
     }
 
-    override fun onTouch(e: MotionEvent): Boolean = when (e.actionMasked) {
+    override fun onTouchEvent(e: MotionEvent): Boolean = when (e.actionMasked) {
         MotionEvent.ACTION_DOWN -> {
             dragging = true; startX = e.rawX; startY = e.rawY
             originX = x; originY = y; parent.requestDisallowInterceptTouchEvent(true)

@@ -273,7 +273,7 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
         out.touchableRegion.set(at[0],at[1],at[0]+panel.width,at[1]+panel.height)
         if(::orb.isInitialized) {
             val oa=IntArray(2);orb.getLocationOnScreen(oa)
-            out.touchableRegion.union(oa[0],oa[1],oa[0]+orb.width,oa[1]+orb.height)
+            out.touchableRegion.union(Rect(oa[0],oa[1],oa[0]+orb.width,oa[1]+orb.height))
         }
     }
     override fun onCloseSystemDialogs() { hide() }
