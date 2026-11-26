@@ -1,8 +1,11 @@
 package com.ifpa.iassistente
 
 import android.annotation.SuppressLint
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -19,6 +22,7 @@ import android.view.inputmethod.InputMethodManager
 import android.webkit.*
 import android.widget.*
 import androidx.webkit.WebViewAssetLoader
+import com.ifpa.iassistente.assistant.WakeWordService
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
@@ -60,6 +64,8 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(WakeWordService.enabled(this) && checkSelfPermission(Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED)
+            startForegroundService(Intent(this,WakeWordService::class.java))
         window.decorView.setBackgroundColor(navy)
         window.decorView.setOnApplyWindowInsetsListener { view, insets ->
             view.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop,

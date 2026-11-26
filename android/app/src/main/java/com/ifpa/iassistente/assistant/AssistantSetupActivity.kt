@@ -51,6 +51,21 @@ class AssistantSetupActivity : Activity() {
         button(if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED)"Voz autorizada" else "Permitir entrada por voz",R.id.assistant_voice_permission) {
             if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)!=PackageManager.PERMISSION_GRANTED)requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),52)
         }
+        val wake=WakeWordService.enabled(this)
+        button(if(wake)"Desligar chamada por voz" else "Chamar pela voz: “Farol me ajude”",R.id.assistant_wake) {
+            val ligar=!wake
+            getSharedPreferences("farol",MODE_PRIVATE).edit().putBoolean("wake_enabled",ligar).apply()
+            if(ligar) {
+                if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)!=PackageManager.PERMISSION_GRANTED)
+                    requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),52)
+                if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED)
+                    requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS),53)
+                if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED)
+                    startForegroundService(Intent(this,WakeWordService::class.java))
+            } else stopService(Intent(this,WakeWordService::class.java))
+            render()
+        }
+        text(if(wake)"Chamada por voz ligada: há um indicador visível e o microfone só “ouve” a frase combinada." else "O Android não permite hotword de terceiros como o 'Ok Google'. Ao ligar, o Farol mantém um indicador visível e escuta apenas a frase combinada.")
         text("Antes de usar a IA, o painel pede autorização para enviar sua pergunta e rótulos dos controles à OpenAI. Campos preenchidos, senhas e imagens da tela não são enviados.")
         button("Voltar",R.id.assistant_setup_close) { finish() }
         setContentView(scroll)

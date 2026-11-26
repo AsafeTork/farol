@@ -20,6 +20,7 @@ import android.text.InputFilter
 import android.view.*
 import android.widget.*
 import com.ifpa.iassistente.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.util.Locale
@@ -42,10 +43,13 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
     private lateinit var card: LinearLayout
     private lateinit var state: TextView
     private lateinit var message: TextView
+    private lateinit var transcript: TextView
     private lateinit var question: EditText
     private lateinit var consentBox: LinearLayout
     private lateinit var explain: Button
     private lateinit var highlight: HighlightView
+    private lateinit var orb: NeuralOrbView
+    private lateinit var edge: EdgeGlowView
     private val navy=Color.rgb(4,24,63)
     private val blue=Color.rgb(19,81,180)
     private val yellow=Color.rgb(255,205,7)
@@ -69,16 +73,25 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
             if(status==TextToSpeech.SUCCESS) {
                 val ready=tts?.setLanguage(Locale.forLanguageTag("pt-BR"))
                 voiceReady=ready!=TextToSpeech.LANG_MISSING_DATA && ready!=TextToSpeech.LANG_NOT_SUPPORTED
+                // Voz feminina pt-BR quando o mecanismo a oferece; nome é a única
+                // pista de gênero que a API pública do Android expõe.
+                tts?.voices?.let { vs ->
+                    val pt=vs.filter { it.locale.language.equals("pt",true) }
+                    val feminina=pt.firstOrNull { Regex("femin|female|mulher|women",RegexOption.IGNORE_CASE).containsMatchIn(it.name) }
+                    val escolhida=feminina ?: pt.firstOrNull { it.name.contains("Google",true) } ?: pt.firstOrNull()
+                    if(escolhida!=null) tts?.setVoice(escolhida)
+                }
                 tts?.setOnUtteranceProgressListener(object:UtteranceProgressListener() {
-                    override fun onStart(id: String?) { ui.post { if(active && ::state.isInitialized)state.text="O Farol está lendo" } }
-                    override fun onDone(id: String?) { ui.post { if(active && ::state.isInitialized)state.text="Você no comando" } }
-                    @Deprecated("Legacy callback") override fun onError(id: String?) { ui.post { if(active && ::state.isInitialized)state.text="A orientação está em texto" } }
+                    override fun onStart(id: String?) { ui.post { if(active && ::state.isInitialized)state.text="O Farol está lendo"; if(::orb.isInitialized)orb.speaking=true } }
+                    override fun onDone(id: String?) { ui.post { if(active && ::state.isInitialized)state.text="Você no comando"; if(::orb.isInitialized){orb.speaking=false;orb.speechLevel=0f} } }
+                    @Deprecated("Legacy callback") override fun onError(id: String?) { ui.post { if(active && ::state.isInitialized)state.text="A orientação está em texto"; if(::orb.isInitialized)orb.speaking=false } }
                 })
             }
         }
     }
     override fun onCreateContentView(): View {
         root=FrameLayout(ctx).apply { setBackgroundColor(Color.TRANSPARENT) }
+        edge=EdgeGlowView(ctx);root.addView(edge,FrameLayout.LayoutParams(-1,-1))
         highlight=HighlightView(ctx);root.addView(highlight,FrameLayout.LayoutParams(-1,-1))
         panel=ScrollView(ctx).apply { id=R.id.assistant_panel;isFillViewport=false;background=bg(navy) }
         card=LinearLayout(ctx).apply { orientation=LinearLayout.VERTICAL;setPadding(dp(16),dp(16),dp(16),dp(16)) }
@@ -92,7 +105,9 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
         message=text("Pergunte ou peça uma explicação dos controles desta tela.").apply {
             id=R.id.assistant_message;accessibilityLiveRegion=View.ACCESSIBILITY_LIVE_REGION_POLITE
         }
-        card.addView(message,LinearLayout.LayoutParams(-1,-2).apply { bottomMargin=dp(16) })
+        card.addView(message,LinearLayout.LayoutParams(-1,-2).apply { bottomMargin=dp(8) })
+        transcript=text("").apply { id=R.id.assistant_transcript;textSize=14f;setTextColor(Color.rgb(85,112,143));maxLines=4 }
+        card.addView(transcript,LinearLayout.LayoutParams(-1,-2).apply { bottomMargin=dp(8) })
         consentBox=LinearLayout(ctx).apply { orientation=LinearLayout.VERTICAL;id=R.id.assistant_consent }
         consentBox.addView(text("Para usar a IA, o Farol envia sua pergunta e rótulos de controles à OpenAI. Valores preenchidos no outro app, senhas e imagens da tela ficam fora do envio."))
         consentBox.addView(button("Autorizar e explicar",R.id.assistant_allow_cloud) {
@@ -120,6 +135,10 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
         root.addView(panel,FrameLayout.LayoutParams(-1,dp(height),Gravity.BOTTOM).apply {
             leftMargin=dp(16);rightMargin=dp(16);bottomMargin=dp(40);topMargin=dp(40)
         })
+        orb=NeuralOrbView(ctx){ hide() }.apply { id=R.id.assistant_orb;alpha=.94f }
+        root.addView(orb,FrameLayout.LayoutParams(dp(104),dp(104),Gravity.TOP or Gravity.END).apply {
+            topMargin=dp(72);rightMargin=dp(16)
+        })
         updateAvailability()
         return root
     }
@@ -135,6 +154,8 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
     }
     override fun onShow(args: Bundle?,flags: Int) {
         super.onShow(args,flags);active=true;generation++;structure=null
+        if(::edge.isInitialized)edge.startGlow()
+        if(::orb.isInitialized){orb.speaking=false;orb.speechLevel=0f}
         if(::highlight.isInitialized)highlight.target=null
         updateAvailability()
         startVoiceOnShow=args?.getBoolean("listen")==true
@@ -158,21 +179,34 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
         state.text="Guia local · sem consulta à IA";message.text=advice.text
         mark(advice.target?.let { snap.bounds[it] });speak(advice.text)
     }
+    private fun history(): JSONArray = try { JSONArray(prefs.getString("assistant_history","[]")?:"[]") } catch(_:Exception) { JSONArray() }
+    private fun remember(question: String, answer: String) {
+        val h=history()
+        if(question.isNotBlank())h.put(JSONObject().put("role","user").put("text",Privacy.clean(question,240)))
+        h.put(JSONObject().put("role","farol").put("text",Privacy.clean(answer,240)))
+        while(h.length()>8)h.remove(0)
+        prefs.edit().putString("assistant_history",h.toString()).apply()
+    }
     private fun ask() {
         if(!active)return
         if(!prefs.getBoolean("ai_consent",false)) { updateAvailability();message.text="Autorize o envio antes de consultar a IA.";return }
         if(!AiClient.configured(ctx)) { message.text="A IA ainda não está conectada. Você pode usar o guia local.";return }
         val snap=snapshot();val prompt=Privacy.clean(question.text.toString(),400)
         if(snap.nodes.length()==0 && prompt.isBlank()) { message.text="Esta tela não compartilhou controles. Escreva seu objetivo para eu ajudar.";return }
-        val payload=snap.envelope(prompt);recordSnapshot(payload)
+        val payload=snap.envelope(prompt)
+        val h=history();if(h.length()>0)payload.put("history",h)
+        recordSnapshot(payload)
         val request=++generation
-        tts?.stop();recognizer?.cancel();state.text="Consultando a IA";message.text="Vou explicar um passo de cada vez.";explain.isEnabled=false
+        tts?.stop();recognizer?.cancel();state.text="Consultando a IA";message.text="Vou explicar um passo de cada vez."
+        if(prompt.isNotBlank())transcript.text=(transcript.text.toString()+"\nVocê: "+prompt).trim().lines().takeLast(4).joinToString("\n");explain.isEnabled=false
         worker.execute {
             try {
                 val result=AiClient.ask(ctx,payload)
                 ui.post {
                     if(!active || request!=generation)return@post
                     explain.isEnabled=true;state.text="Orientação da OpenAI";message.text=result.instruction
+                    remember(prompt,result.instruction)
+                    transcript.text=(transcript.text.toString()+"\nFarol: "+result.instruction).trim().lines().takeLast(4).joinToString("\n")
                     mark(result.target?.let { snap.bounds[it] });speak(result.instruction)
                     if(BuildConfig.DEBUG)File(ctx.filesDir,"last-ai-result.json").writeText(JSONObject().put("provider",result.provider).put("model",result.model).put("request_id",result.requestId).put("instruction",result.instruction).put("target_id",result.target ?: JSONObject.NULL).toString())
                 }
@@ -213,10 +247,12 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
         try {
             tts?.stop();recognizer?.destroy();recognizer=FarolSpeech.create(ctx)
             recognizer?.setRecognitionListener(object:SpeechListener() {
-                override fun onReadyForSpeech(params:Bundle?) { if(active)state.text="Ouvindo você" }
-                override fun onError(error:Int) { if(active){state.text="Microfone parado";message.text="Não consegui entender. Você pode escrever sua pergunta."} }
+                override fun onReadyForSpeech(params:Bundle?) { if(active)state.text="Ouvindo você"; if(::orb.isInitialized)orb.speaking=true }
+                override fun onRmsChanged(rmsdB: Float) { if(::orb.isInitialized)orb.speechLevel=((rmsdB+12f)/22f).coerceIn(0f,1f) }
+                override fun onError(error:Int) { if(active){state.text="Microfone parado";message.text="Não consegui entender. Você pode escrever sua pergunta."}; if(::orb.isInitialized)orb.speaking=false }
                 override fun onResults(results:Bundle?) {
                     if(!active)return
+                    if(::orb.isInitialized){orb.speaking=false;orb.speechLevel=0f}
                     val heard=results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty()
                     if(heard.isNotBlank()){question.setText(Privacy.clean(heard,400));ask()}
                 }
@@ -235,6 +271,10 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
         out.contentInsets.set(0,root.height,0,0)
         out.touchableInsets=Insets.TOUCHABLE_INSETS_REGION
         out.touchableRegion.set(at[0],at[1],at[0]+panel.width,at[1]+panel.height)
+        if(::orb.isInitialized) {
+            val oa=IntArray(2);orb.getLocationOnScreen(oa)
+            out.touchableRegion.union(oa[0],oa[1],oa[0]+orb.width,oa[1]+orb.height)
+        }
     }
     override fun onCloseSystemDialogs() { hide() }
     override fun onHide() {

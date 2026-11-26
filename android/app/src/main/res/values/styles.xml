@@ -35,4 +35,7 @@
 <item name="assistant_local" type="id"/>
 <item name="assistant_consent" type="id"/>
 <item name="assistant_allow_cloud" type="id"/>
+<item name="assistant_wake" type="id"/>
+<item name="assistant_orb" type="id"/>
+<item name="assistant_transcript" type="id"/>
 </resources>

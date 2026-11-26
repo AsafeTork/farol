@@ -40,8 +40,9 @@ SCHEMA = {
         "instruction": {"type": "string"},
         "detail": {"type": "string"},
         "target_id": {"type": ["integer", "null"]},
+        "skill_report": {"type": ["string", "null"]},
     },
-    "required": ["instruction", "detail", "target_id"],
+    "required": ["instruction", "detail", "target_id", "skill_report"],
     "additionalProperties": False,
 }
 
@@ -56,13 +57,12 @@ def clean(text: str, limit: int = 180) -> str:
 
 
 def validate_request(data: object) -> dict:
-    if not isinstance(data, dict) or set(data) != {
-        "version",
-        "application",
-        "question",
-        "nodes",
-        "consent",
-    }:
+    obrigatorias = {"version", "application", "question", "nodes", "consent"}
+    if (
+        not isinstance(data, dict)
+        or not obrigatorias <= set(data)
+        or not set(data) <= obrigatorias | {"history"}
+    ):
         raise GatewayError(400, "invalid_envelope")
     if (
         type(data["version"]) is not int
@@ -102,6 +102,20 @@ def validate_request(data: object) -> dict:
                 "filled": node["filled"],
             }
         )
+    history = []
+    if "history" in data:
+        if not isinstance(data["history"], list) or len(data["history"]) > 8:
+            raise GatewayError(400, "invalid_history")
+        for turn in data["history"]:
+            if (
+                not isinstance(turn, dict)
+                or set(turn) != {"role", "text"}
+                or turn["role"] not in {"user", "farol"}
+                or not isinstance(turn["text"], str)
+                or len(turn["text"]) > 240
+            ):
+                raise GatewayError(400, "invalid_history")
+            history.append({"role": turn["role"], "text": clean(turn["text"], 240)})
     question = clean(data["question"], 400)
     if not nodes and not question:
         raise GatewayError(422, "screen_unavailable")
@@ -111,17 +125,21 @@ def validate_request(data: object) -> dict:
         "question": question,
         "nodes": nodes,
         "consent": "cloud-v1",
+        "history": history,
     }
 
 
 def validate_advice(advice: object, nodes: list) -> dict:
-    if not isinstance(advice, dict) or set(advice) != {
-        "instruction",
-        "detail",
-        "target_id",
-    }:
+    permitidas = {"instruction", "detail", "target_id", "skill_report"}
+    if (
+        not isinstance(advice, dict)
+        or not {"instruction", "detail", "target_id"} <= set(advice)
+        or not set(advice) <= permitidas
+    ):
         raise GatewayError(502, "invalid_provider_response")
-    for name, limit in [("instruction", 240), ("detail", 400)]:
+    for name, limit in [("instruction", 240), ("detail", 400), ("skill_report", 1200)]:
+        if name not in advice or (name == "skill_report" and advice[name] is None):
+            continue
         if (
             not isinstance(advice[name], str)
             or not advice[name].strip()
@@ -133,11 +151,24 @@ def validate_advice(advice: object, nodes: list) -> dict:
         type(target) is not int or target not in {n["id"] for n in nodes}
     ):
         raise GatewayError(502, "invented_target")
-    return {
+    saida = {
         "instruction": clean(advice["instruction"], 240),
         "detail": clean(advice["detail"], 400),
         "target_id": target,
     }
+    if isinstance(advice.get("skill_report"), str) and advice["skill_report"].strip():
+        saida["skill_report"] = clean(advice["skill_report"], 1200)
+    return saida
+
+
+def save_skill_report(texto: str) -> str:
+    """Relatório saneado, salvo só no aparelho — nunca enviado de volta à nuvem."""
+    destino = Path(__file__).resolve().parent.parent / "agente" / "relatorios"
+    destino.mkdir(parents=True, exist_ok=True)
+    nome = dt.datetime.now().strftime("%Y%m%d-%H%M") + "-nova-skill.md"
+    corpo = "# Relatório de nova skill — Farol\n\n" + clean(texto, 1200) + "\n"
+    (destino / nome).write_text(corpo, encoding="utf-8")
+    return nome
 
 
 def call_openai(data: dict) -> dict:
@@ -151,6 +182,7 @@ def call_openai(data: dict) -> dict:
         "store": False,
         "max_output_tokens": 800,
         "reasoning": {"effort": "none"},
+        "tools": [{"type": "web_search"}],
         "text": {
             "format": {
                 "type": "json_schema",
@@ -285,10 +317,19 @@ class Handler(BaseHTTPRequestHandler):
                 raise GatewayError(400, "invalid_json") from None
             self.server.budget.take()
             result = self.server.provider(data)
-            validate_advice(
-                {k: result[k] for k in ("instruction", "detail", "target_id")},
-                data["nodes"],
-            )
+            permitidas = {
+                k: result[k]
+                for k in ("instruction", "detail", "target_id")
+                if k in result
+            }
+            if "skill_report" in result:
+                permitidas["skill_report"] = result["skill_report"]
+            validado = validate_advice(permitidas, data["nodes"])
+            if validado.get("skill_report"):
+                result["skill_report_path"] = save_skill_report(
+                    validado.pop("skill_report")
+                )
+            result.update(validado)
             self.server.metrics.append(
                 {
                     "request_id": request_id,
