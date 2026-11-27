@@ -49,8 +49,8 @@ class NeuralOrbView(context: Context, private val onClose: () -> Unit) : View(co
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         radius = min(w, h) * 0.23f
-        halo.shader = RadialGradient(w / 2f, h / 2f, radius * .3f, w / 2f, h / 2f, radius * 1.55f,
-            longArrayOf(0x66FFB020L, 0x22FFCD07L, 0x00000000L), floatArrayOf(0f, .45f, 1f), Shader.TileMode.CLAMP)
+        halo.color = 0xFFFFB020.toInt()
+        halo.style = Paint.Style.FILL
         core.color = 0xFF04183F.toInt()
         dot.color = 0xFFFFCD07.toInt()
         zone.color = 0x26FFCD07
@@ -66,10 +66,16 @@ class NeuralOrbView(context: Context, private val onClose: () -> Unit) : View(co
         val talk = if (speaking) .16f * speechLevel.coerceIn(0f, 1f) else 0f
         val r = radius * (breath + talk)
 
-        canvas.drawCircle(cx, cy, r * 1.5f, halo)
-        core.shader = RadialGradient(cx - r * .25f, cy - r * .3f, r * .2f, cx, cy, r,
-            longArrayOf(0xFF155BCBL, 0xFF04183FL), floatArrayOf(0f, 1f), Shader.TileMode.CLAMP)
+        // aura: três anéis translúcidos (dither de cor, sem shader nativo)
+        for (i in 3 downTo 1) {
+            halo.alpha = 34 + (3 - i) * 26
+            canvas.drawCircle(cx, cy, r * (1f + i * .16f), halo)
+        }
+        halo.alpha = 255
+        core.color = 0xFF155BCB.toInt()
         canvas.drawCircle(cx, cy, r, core)
+        core.color = 0xFF04183F.toInt()
+        canvas.drawCircle(cx, cy, r * .82f, core)
         // anel de vidro fosco
         core.shader = null
         core.style = Paint.Style.STROKE
