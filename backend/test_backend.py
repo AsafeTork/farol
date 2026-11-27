@@ -8,6 +8,7 @@ from farol_backend import (
     validate_request,
     validate_advice,
     call_openai,
+    call_colab,
 )
 
 
@@ -227,6 +228,63 @@ class HttpTests(unittest.TestCase):
 
     def test_unknown_route(self):
         self.assertEqual(self.request(envelope(), path="/other")[0], 404)
+
+
+class ColabBridgeTests(unittest.TestCase):
+    def test_colab_provider_parses_chat_completion(self):
+        resposta = json.dumps(
+            {
+                "model": "cyber:latest",
+                "eval_count": 42,
+                "message": {
+                    "content": json.dumps(
+                        {
+                            "instruction": "Toque no campo CPF.",
+                            "detail": "Primeiro passo.",
+                            "target_id": 1,
+                            "skill_report": None,
+                        }
+                    )
+                },
+            }
+        ).encode()
+
+        class Falso:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+            def read(self, n):
+                return resposta
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "FAROL_COLAB_URL": "https://exemplo.trycloudflare.com",
+                    "FAROL_COLAB_TOKEN": "x" * 40,
+                },
+            ),
+            patch(
+                "farol_backend.urllib.request.urlopen", return_value=Falso()
+            ) as chamada,
+        ):
+            resultado = call_colab(validate_request(envelope()))
+        self.assertEqual(resultado["provider"], "colab")
+        self.assertEqual(resultado["target_id"], 1)
+        pedido = json.loads(chamada.call_args[0][0].data)
+        self.assertEqual(pedido["messages"][0]["role"], "system")
+        self.assertIn("Farol", pedido["messages"][0]["content"])
+
+    def test_colab_rejects_insecure_url(self):
+        with patch.dict(
+            os.environ,
+            {"FAROL_COLAB_URL": "http://inseguro", "FAROL_COLAB_TOKEN": "x" * 40},
+        ):
+            with self.assertRaises(GatewayError):
+                call_colab(validate_request(envelope()))
 
 
 if __name__ == "__main__":

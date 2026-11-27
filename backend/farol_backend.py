@@ -13,6 +13,7 @@ import threading
 from pathlib import Path
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -45,6 +46,72 @@ SCHEMA = {
     "required": ["instruction", "detail", "target_id", "skill_report"],
     "additionalProperties": False,
 }
+
+
+def escolher_provider():
+    """Ponte: modelo no Colab (sem créditos de API) quando configurado."""
+    if os.getenv("FAROL_COLAB_URL") and os.getenv("FAROL_COLAB_TOKEN"):
+        return call_colab
+    return call_openai
+
+
+def call_colab(data: dict) -> dict:
+    """Converte o envelope do Farol para /v1/chat/completions do proxy no Colab."""
+    base = os.getenv("FAROL_COLAB_URL", "").strip().rstrip("/")
+    token = os.getenv("FAROL_COLAB_TOKEN", "")
+    if not base or not token:
+        raise GatewayError(503, "colab_not_configured")
+    parsed = urllib.parse.urlparse(base)
+    if parsed.scheme != "https" or parsed.query or parsed.fragment or parsed.username:
+        raise GatewayError(503, "colab_invalid_url")
+    modelo = os.getenv("FAROL_COLAB_MODEL", "cyber:latest")
+    instrucoes = (
+        SYSTEM
+        + "\n\n Responda SOMENTE com o JSON estrito descrito, sem texto fora dele."
+    )
+    corpo = {
+        "model": modelo,
+        "messages": [
+            {"role": "system", "content": instrucoes},
+            {"role": "user", "content": json.dumps(data, ensure_ascii=False)},
+        ],
+        "stream": False,
+        "think": False,  # Qwen3.5 consome o orçamento em thinking e devolve content vazio
+        "format": "json",
+        "options": {"temperature": 0.2, "num_predict": 500},
+    }
+    req = urllib.request.Request(
+        base + "/api/chat",
+        data=json.dumps(corpo).encode("utf-8"),
+        headers={
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=140) as response:
+            bruto = json.loads(response.read(262145))
+    except urllib.error.HTTPError as exc:
+        status = exc.code
+        exc.close()
+        raise GatewayError(
+            503 if status in (401, 402, 403, 429) else 502, "colab_" + str(status)
+        ) from None
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        raise GatewayError(504, "colab_unavailable") from None
+    try:
+        texto = bruto["message"]["content"]
+        advice = json.loads(texto)
+    except (KeyError, IndexError, json.JSONDecodeError, TypeError):
+        raise GatewayError(502, "invalid_provider_response") from None
+    validado = validate_advice(advice, data["nodes"])
+    return {
+        **validado,
+        "provider": "colab",
+        "model": bruto.get("model", modelo),
+        "request_id": "colab-" + uuid.uuid4().hex[:16],
+        "usage": {"completion_tokens": bruto.get("eval_count", 0)},
+    }
 
 
 class GatewayError(Exception):
@@ -257,11 +324,11 @@ class Budget:
 class Gateway(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, address, token: str, provider=call_openai):
+    def __init__(self, address, token: str, provider=None):
         if len(token) < 24:
             raise ValueError("FAROL_DEVICE_TOKEN precisa ter pelo menos 24 caracteres")
         super().__init__(address, Handler)
-        self.token, self.provider = token, provider
+        self.token, self.provider = token, (provider or call_openai)
         self.budget = Budget(int(os.getenv("FAROL_DAILY_LIMIT", "50")))
         self.metrics = []
 
@@ -289,7 +356,10 @@ class Handler(BaseHTTPRequestHandler):
             200,
             {
                 "service": "farol",
-                "provider_configured": bool(os.getenv("OPENAI_API_KEY")),
+                "provider": "colab" if self.server.provider == call_colab else "openai",
+                "provider_configured": bool(
+                    os.getenv("FAROL_COLAB_TOKEN") or os.getenv("OPENAI_API_KEY")
+                ),
                 "model": MODEL,
             },
         )
@@ -364,10 +434,16 @@ def main():
     args = parser.parse_args()
     if args.env:
         load_env(args.env)
-    MODEL = os.getenv("OPENAI_MODEL", "gpt-6-luna")
+    provider = escolher_provider()
+    MODEL = (
+        os.getenv("FAROL_COLAB_MODEL")
+        if provider == call_colab
+        else os.getenv("OPENAI_MODEL", "gpt-6-luna")
+    )
     server = Gateway(
         (args.host, int(os.getenv("FAROL_PORT", "8765"))),
         os.getenv("FAROL_DEVICE_TOKEN", ""),
+        provider=provider,
     )
     print(
         json.dumps(
@@ -375,7 +451,10 @@ def main():
                 "service": "farol",
                 "port": server.server_port,
                 "model": MODEL,
-                "provider_configured": bool(os.getenv("OPENAI_API_KEY")),
+                "provider": "colab" if provider == call_colab else "openai",
+                "provider_configured": bool(
+                    os.getenv("FAROL_COLAB_TOKEN") or os.getenv("OPENAI_API_KEY")
+                ),
             }
         ),
         flush=True,
