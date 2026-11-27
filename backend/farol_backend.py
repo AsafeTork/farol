@@ -68,6 +68,9 @@ def call_colab(data: dict) -> dict:
     instrucoes = (
         SYSTEM
         + "\n\n Responda SOMENTE com o JSON estrito descrito, sem texto fora dele."
+        + " SEMPRE inclua as quatro chaves: instruction, detail, target_id e skill_report."
+        + " Use skill_report:null se não houver relatório; se o usuário pedir um relatório,"
+        + " preencha skill_report com serviço, URL, passos numerados e data."
     )
     corpo = {
         "model": modelo,
