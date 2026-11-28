@@ -217,7 +217,7 @@ class FarolSession(private val ctx: Context) : VoiceInteractionSession(ctx) {
                     message.text=when((error as? AiUnavailable)?.code) {
                         "test_budget_reached"->"O limite de consultas deste teste foi alcançado. O guia local continua disponível."
                         "openai_not_configured","not_configured"->"A conexão com a OpenAI ainda precisa ser concluída. O guia local está disponível."
-                        "not_a_real_provider"->"O serviço não confirmou uma resposta real da OpenAI. A orientação não será apresentada como IA."
+                        "not_a_real_provider"->"O serviço não confirmou uma resposta real do provedor. A orientação não será apresentada como IA."
                         else->"Não consegui consultar a IA. Tente novamente ou use o guia local."
                     }
                 }

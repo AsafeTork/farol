@@ -50,7 +50,7 @@ object AiClient {
             val raw=conn.inputStream.use { limited(it,16384) }
             val body=JSONObject(raw.toString(Charsets.UTF_8))
             val provider=body.getString("provider")
-            if(provider!="openai")throw AiUnavailable("not_a_real_provider")
+            if(provider !in setOf("openai","colab"))throw AiUnavailable("not_a_real_provider")
             val instruction=body.getString("instruction");val detail=body.getString("detail")
             if(instruction.isBlank() || instruction.length>240 || detail.length>400)throw AiUnavailable("invalid_response")
             val target=if(body.isNull("target_id")) null else body.getInt("target_id")

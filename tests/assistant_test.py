@@ -2,6 +2,7 @@
 """Integração real em aparelho: contexto externo, consentimento, OpenAI e toque.
 Requer beta pareado e escolhido como assistente. Usa somente dados fictícios.
 """
+
 import argparse
 import json
 import time
@@ -22,21 +23,23 @@ def main():
             results.append({"name": name, "status": "pass", "detail": detail or ""})
             print("PASS", name, flush=True)
         except Exception as exc:
-            phone.shot("FALHA-assistente-"+str(len(results)))
+            phone.shot("FALHA-assistente-" + str(len(results)))
             results.append({"name": name, "status": "fail", "detail": str(exc)})
             raise
         finally:
-            (phone.out/"assistant-tests.json").write_text(json.dumps(results, ensure_ascii=False, indent=2))
+            (phone.out / "assistant-tests.json").write_text(
+                json.dumps(results, ensure_ascii=False, indent=2)
+            )
 
     def require(value, reason):
         if not value:
             raise AssertionError(reason)
 
     def rid(name):
-        return PACKAGE+":id/assistant_"+name
+        return PACKAGE + ":id/assistant_" + name
 
     def evidence(name, data):
-        (phone.out/name).write_text(json.dumps(data, ensure_ascii=False, indent=2))
+        (phone.out / name).write_text(json.dumps(data, ensure_ascii=False, indent=2))
 
     def external_session():
         phone.fixture()
@@ -44,9 +47,19 @@ def main():
         phone.wait_text("Farol", 10)
         require(phone.node(rid("panel")), "Painel do assistente ausente")
         state = phone.adb("shell", "dumpsys", "activity", "activities")
-        tops = [line for line in state.splitlines() if "topResumedActivity=" in line or "mResumedActivity=" in line]
-        require(any(FIXTURE in line for line in tops), "A atividade externa saiu do primeiro plano")
-        evidence("foreground-session.json", {"activity": tops, "invocation": "KEYCODE_ASSIST"})
+        tops = [
+            line
+            for line in state.splitlines()
+            if "topResumedActivity=" in line or "mResumedActivity=" in line
+        ]
+        require(
+            any(FIXTURE in line for line in tops),
+            "A atividade externa saiu do primeiro plano",
+        )
+        evidence(
+            "foreground-session.json",
+            {"activity": tops, "invocation": "KEYCODE_ASSIST"},
+        )
         phone.shot("03-painel-sobre-outro-app")
         return "KEYCODE_ASSIST abriu VoiceInteractionSession mantendo o exercício como atividade retomada"
 
@@ -58,8 +71,13 @@ def main():
         payload = phone.private("last-assist-snapshot.json")
         require(payload["application"] == FIXTURE, "Captura pertence ao app errado")
         require(bool(payload["nodes"]), "Captura vazia não é prova")
-        require(any(n["role"] == "textbox" for n in payload["nodes"]), "Campo não capturado")
-        require(payload["consent"] == "local", "Guia local foi marcado como consulta de nuvem")
+        require(
+            any(n["role"] == "textbox" for n in payload["nodes"]), "Campo não capturado"
+        )
+        require(
+            payload["consent"] == "local",
+            "Guia local foi marcado como consulta de nuvem",
+        )
         evidence("assist-empty-sanitized.json", payload)
         phone.shot("04-guia-local-externo")
         return {"nodes": len(payload["nodes"]), "application": payload["application"]}
@@ -78,58 +96,93 @@ def main():
                 phone.tap(rid("allow_cloud"), scroll=True)
             else:
                 phone.tap(rid("explain"), scroll=True)
-        deadline = time.monotonic()+40
+        deadline = time.monotonic() + 40
         result = None
-        while time.monotonic()<deadline:
+        while time.monotonic() < deadline:
             try:
                 result = phone.private("last-ai-result.json")
-                if result.get("request_id", "").startswith("resp_"):
+                if result.get("request_id", "").startswith(("resp_", "colab-")):
                     break
             except (RuntimeError, json.JSONDecodeError):
                 pass
             time.sleep(1)
-        require(result and result.get("provider") == "openai", "Nenhuma resposta real recebida no aparelho")
-        require(result.get("request_id", "").startswith("resp_"), "Sem ID da resposta OpenAI")
+        require(
+            result and result.get("provider") in ("openai", "colab"),
+            "Nenhuma resposta real recebida no aparelho",
+        )
+        require(
+            result.get("request_id", "").startswith(("resp_", "colab-")),
+            "Sem ID de resposta real do provedor",
+        )
         payload = phone.private("last-assist-snapshot.json")
         require(payload["consent"] == "cloud-v1", "Consentimento de nuvem ausente")
         ids = {n["id"] for n in payload["nodes"]}
-        require(result["target_id"] is None or result["target_id"] in ids, "Alvo inventado")
-        require(result["instruction"] in phone.texts(), "A resposta não apareceu no painel")
+        require(
+            result["target_id"] is None or result["target_id"] in ids, "Alvo inventado"
+        )
+        require(
+            result["instruction"] in phone.texts(), "A resposta não apareceu no painel"
+        )
         evidence("openai-on-device.json", result)
         evidence("openai-device-payload.json", payload)
         phone.shot("05-openai-sobre-exercicio")
-        return {"model": result["model"], "request_id": result["request_id"], "target_id": result["target_id"]}
+        return {
+            "model": result["model"],
+            "request_id": result["request_id"],
+            "target_id": result["target_id"],
+        }
 
     check("IA real responde no painel sobre outro aplicativo", real_ai)
 
     def filled_privacy():
         phone.hide()
         phone.fixture()
-        phone.tap(FIXTURE+":id/fixture_cpf")
+        phone.tap(FIXTURE + ":id/fixture_cpf")
         phone.adb("shell", "input", "text", "12345678901")
         phone.adb("shell", "input", "keyevent", "4")
-        phone.tap(FIXTURE+":id/fixture_password")
+        phone.tap(FIXTURE + ":id/fixture_password")
         phone.adb("shell", "input", "text", "S3gredoFarol2026")
         phone.adb("shell", "input", "keyevent", "4")
         phone.invoke()
         phone.tap(rid("local"), scroll=True)
         payload = phone.private("last-assist-snapshot.json")
-        require(payload["application"] == FIXTURE and len(payload["nodes"]) >= 3, "Captura de privacidade vazia ou insuficiente")
-        require(any(n["role"] == "textbox" and n["filled"] for n in payload["nodes"]), "CPF preenchido não foi observado")
+        require(
+            payload["application"] == FIXTURE and len(payload["nodes"]) >= 3,
+            "Captura de privacidade vazia ou insuficiente",
+        )
+        require(
+            any(n["role"] == "textbox" and n["filled"] for n in payload["nodes"]),
+            "CPF preenchido não foi observado",
+        )
         serialized = json.dumps(payload)
-        for secret in ["12345678901", "S3gredoFarol2026", "contato-privado", "example.invalid"]:
-            require(secret not in serialized, "Dado fictício privado vazou: "+secret)
-        require(all(set(n) == {"id", "role", "label", "filled"} for n in payload["nodes"]), "Propriedade extra na captura")
+        for secret in [
+            "12345678901",
+            "S3gredoFarol2026",
+            "contato-privado",
+            "example.invalid",
+        ]:
+            require(secret not in serialized, "Dado fictício privado vazou: " + secret)
+        require(
+            all(set(n) == {"id", "role", "label", "filled"} for n in payload["nodes"]),
+            "Propriedade extra na captura",
+        )
         evidence("assist-filled-sanitized.json", payload)
         phone.shot("06-campos-preenchidos-saneados")
-        return {"nodes": len(payload["nodes"]), "typed_values": "absent", "free_text": "absent"}
+        return {
+            "nodes": len(payload["nodes"]),
+            "typed_values": "absent",
+            "free_text": "absent",
+        }
 
     check("campos preenchidos e texto livre ficam fora do contexto", filled_privacy)
 
     def user_controls():
         phone.hide()
-        require("Exercício concluído" not in phone.texts(), "Farol enviou o formulário sozinho")
-        phone.tap(FIXTURE+":id/fixture_continue")
+        require(
+            "Exercício concluído" not in phone.texts(),
+            "Farol enviou o formulário sozinho",
+        )
+        phone.tap(FIXTURE + ":id/fixture_continue")
         phone.wait_text("Exercício concluído", 10)
         phone.shot("07-acao-executada-pela-pessoa")
         return "Somente o toque explícito do teste no botão concluiu o exercício"
